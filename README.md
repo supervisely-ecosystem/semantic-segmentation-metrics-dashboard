@@ -2,7 +2,7 @@
 
 <img src="" style="width: 100%;"/>
 
-# Application Readme
+# Semantic Segmentation Metrics Dashboard
 
 <p align="center">
   <a href="#Overview">Overview</a> •
