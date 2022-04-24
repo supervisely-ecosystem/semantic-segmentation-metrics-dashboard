@@ -1,0 +1,14 @@
+<sly-card title="Load Input Data" subtitle="select projects to calculate metrics on">
+{{{ download_projects_button.to_html() }}}
+    <div style="display:flex; flex-direction: row">
+        <div style="margin: 0 15px">
+            <h4>Ground Truth Project</h4>
+            {{{ gt_project_selector.to_html() }}}
+        </div>
+        <div style="margin: 0 15px">
+            <h4>Predicted Project</h4>
+            {{{ pred_project_selector.to_html() }}}
+        </div>
+
+    </div>
+</sly-card>

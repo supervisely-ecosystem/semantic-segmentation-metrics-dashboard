@@ -3,84 +3,30 @@
 <head>
     <title>Application Name</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/svg.select.js@3.0.1/dist/svg.select.min.css"/>
-    <!--    <link rel="stylesheet" href="https://supervise.ly/apps-designer.bundle.css"/>-->
     <link rel="stylesheet" href="./static/styles.css"/>
 </head>
 
 <body>
 
-<script src="https://supervise.ly/apps-designer.bundle.js"></script>
-<script>
-    window.Vue = sly.Vue;
-</script>
-
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsoneditor@9.7.0/dist/jsoneditor.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jsoneditor@9.7.0/dist/jsoneditor.min.js"></script>
-
-
+<script src="https://supervise.ly/sly-app-widgets-2.0.0.bundle.js"></script>
 <script
         type="module"
-        src="https://cdn.jsdelivr.net/gh/supervisely-ecosystem/supervisely-app-frontend-js@v0.0.11/SlyApp.js">
+        src="https://cdn.jsdelivr.net/gh/supervisely-ecosystem/supervisely-app-frontend-js@v0.0.12/SlyApp.js">
 </script>
+<!--        src="https://supervisely-ecosystem.github.io/supervisely-app-frontend-js/SlyApp.js">-->
 
 
 <div id="sly-app">
     <sly-app>
         <template v-slot="{ post, state, data }">
 
-            <div style="position: fixed; top: 0; right: 0; z-index: 999999">
-                <el-button
-                        style="position: absolute; right:0;  z-index: 99999"
-                        @click="state.showViewer = !state.showDebugViewer" size="small">
-                    toggle
-                </el-button>
-
-                <json-viewer v-if='state.showViewer' :value="{'state': state, 'data': data}"
-                ></json-viewer>
-            </div>
-
-            {{{ simple_notification.to_html() }}}
+            <sly-stepper :active="state.currentStep">
+                <sly-stepper-item> {% include 'stepper/step_1_input_projects.html' %}</sly-stepper-item>
+            </sly-stepper>
 
         </template>
     </sly-app>
 </div>
-
-<!--<include src="/static/widgets.html"></include>-->
-
-
-<script>
-    Vue.component('json-viewer', {
-        props: ['value'],
-        template: `
-          <div>
-          <div ref="jsoneditor" style="width: 340px; height: 350px;"></div>
-          </div>
-        `,
-        watch: {
-            value: {
-                handler(value) {
-
-                    this.editor.set(value);
-                },
-                // slow implementation
-                deep: true,
-            },
-        },
-        mounted() {
-            const container = this.$refs.jsoneditor;
-            const options = {
-                mode: 'view'
-            };
-
-            this.editor = new JSONEditor(container, options);
-            this.editor.set(this.value);
-
-        }
-    })
-    ;
-</script>
-
 
 </body>
 </html>
