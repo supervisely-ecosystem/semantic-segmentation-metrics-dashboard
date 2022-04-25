@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import FastAPI
 
 from supervisely import FileCache
-from supervisely.app import StateJson
+from supervisely.app import StateJson, DataJson
 from supervisely.sly_logger import logger
 from starlette.staticfiles import StaticFiles
 
@@ -34,7 +34,7 @@ app.mount("/static", StaticFiles(directory=os.path.join(app_root_directory, 'sta
 
 templates_env = Jinja2Templates(directory=os.path.join(app_root_directory, 'templates'))
 
-StateJson()['currentStep'] = 1
+DataJson()['current_step'] = 1
 
 
 gt_project_dir = os.path.join(app_root_directory, 'tempfiles', 'gt_project_dir')

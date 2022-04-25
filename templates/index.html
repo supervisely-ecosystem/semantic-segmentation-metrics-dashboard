@@ -20,8 +20,9 @@
     <sly-app>
         <template v-slot="{ post, state, data }">
 
-            <sly-stepper :active="state.currentStep">
+            <sly-stepper :active="data.current_step">
                 <sly-stepper-item> {% include 'stepper/step_1_input_projects.html' %}</sly-stepper-item>
+                <sly-stepper-item> {% include 'stepper/step_2_select_datasets.html' %}</sly-stepper-item>
             </sly-stepper>
 
         </template>
