@@ -30,8 +30,8 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
         card_functions.download_project(project_selector_widget=card_widgets.gt_project_selector,
                                         state=state, project_dir=g.gt_project_dir)
 
-        card_functions.download_project(project_selector_widget=card_widgets.gt_project_selector,
-                                        state=state, project_dir=g.gt_project_dir)
+        card_functions.download_project(project_selector_widget=card_widgets.pred_project_selector,
+                                        state=state, project_dir=g.pred_project_dir)
 
         card_widgets.download_projects_button.disabled = True
         DataJson()['current_step'] += 1
@@ -40,7 +40,8 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
         card_widgets.gt_project_selector.disabled = False
 
         logger.warn(f'Cannot download projects: {repr(ex)}')
-        raise HTTPException(status_code=500, detail={'title': "Cannot download projects", 'message': f'Please select input data and try again'})
+        raise HTTPException(status_code=500, detail={'title': "Cannot download projects",
+                                                     'message': f'Please select input data and try again'})
 
     finally:
         card_widgets.download_projects_button.loading = False

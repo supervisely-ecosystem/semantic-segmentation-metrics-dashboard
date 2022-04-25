@@ -1,6 +1,6 @@
 <sly-card title="Load Input Data" subtitle="select projects to calculate metrics on">
     <div style="display:flex; flex-direction: row">
-        <div style="margin: 0 15px">
+        <div style="margin: 0 15px 0 5px;">
             <h4>Ground Truth Project</h4>
             {{{ gt_project_selector.to_html() }}}
         </div>
@@ -10,7 +10,7 @@
         </div>
 
     </div>
-    <div style="margin: 15px 0 0 15px; display: flex; flex-direction: column">
+    <div style="margin: 15px 0 0 5px; display: flex; flex-direction: column">
         <div style="width: 420px; margin-bottom: 15px">
             {{{ download_projects_progress.to_html() }}}
         </div>

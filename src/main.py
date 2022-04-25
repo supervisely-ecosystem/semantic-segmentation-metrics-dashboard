@@ -3,6 +3,7 @@ from fastapi import Request, Depends
 import src.sly_globals as g
 
 import src.select_input_projects
+import src.select_input_datasets
 
 
 @g.app.get("/")

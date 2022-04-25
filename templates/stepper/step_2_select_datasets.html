@@ -5,6 +5,7 @@
               style="width: 100%"
               :default-sort="{prop: 'left.name', order: 'ascending'}"
     >
+        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column sortable prop="left.name" :label="`GT Datasets`">
             <template scope="scope">
                 <div v-if="scope.row.left.name.length > 0">
@@ -44,28 +45,29 @@
             </template>
         </el-table-column>
     </el-table>
-
-    <br/>
-    <br/>
-    <div class="mt5"><i class="zmdi zmdi-map mr5" style="width: 15px; display: inline-block"></i>Legend:</div>
-    <div class="mt5">
-        <span style="color: green"><i class="zmdi zmdi-check mr5" style="width: 15px; display: inline-block"></i>matched</span>
-        - images have same names and same content
-    </div>
-    <div class="mt5">
-        <span style="color: red"><i class="zmdi zmdi-close mr5" style="width: 15px; display: inline-block"></i>conflicts</span>
-        - images have same names but different content
-    </div>
-    <div class="mt5">
+    <div style="display:flex; flex-direction:row; justify-content: space-between; align-items: flex-end; margin: 0 5px">
+        <div>{{{ select_datasets_button.to_html() }}}</div>
+        <div style="margin-top: 25px">
+            <div class="mt5"><i class="zmdi zmdi-map mr5" style="width: 15px; display: inline-block"></i>Legend:</div>
+            <div class="mt5">
+                <span style="color: green"><i class="zmdi zmdi-check mr5"
+                                              style="width: 15px; display: inline-block"></i>matched</span>
+                - images have same names and same content
+            </div>
+            <div class="mt5">
+                <span style="color: red"><i class="zmdi zmdi-close mr5" style="width: 15px; display: inline-block"></i>conflicts</span>
+                - images have same names but different content
+            </div>
+            <div class="mt5">
             <span style="color: #20a0ff"><i class="zmdi zmdi-plus-circle-o mr5"
                                             style="width: 15px; display: inline-block"></i>unique</span>
-        - images only present in one dataset
-    </div>
-    <div class="mt5">
+                - images only present in one dataset
+            </div>
+            <div class="mt5">
             <span style="color: #F39C12"><i class="zmdi zmdi-folder-outline mr5"
                                             style="width: 15px; display: inline-block"></i>unmatched</span>
-        - dataset is only in one project
+                - dataset is only in one project
+            </div>
+        </div>
     </div>
-    <br/>
-
 </sly-card>
