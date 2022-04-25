@@ -10,7 +10,15 @@
         </div>
 
     </div>
-    <div style="margin: 25px 0 0 15px">
-        {{{ download_projects_button.to_html() }}}
+    <div style="margin: 15px 0 0 15px; display: flex; flex-direction: column">
+        <div style="width: 420px; margin-bottom: 15px">
+            {{{ download_projects_progress.to_html() }}}
+        </div>
+        <div style="">
+            {{{ download_projects_button.to_html() }}}
+        </div>
+
+
     </div>
+
 </sly-card>
