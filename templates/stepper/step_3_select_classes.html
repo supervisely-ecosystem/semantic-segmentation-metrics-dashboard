@@ -2,21 +2,20 @@
 
 
     <el-table class="ultra-table"
-              :data="data.datasets_table_content"
+              :data="data.classes_table_content"
               :disabled="data.current_step > 2"
               style="width: 100%"
               :default-sort="{prop: 'left.name', order: 'ascending'}"
               @selection-change="
                 (val) => {
                     state.selectedClasses = val.map(x => x.left.name);
-                }
-                "
+                }"
     >
         <el-table-column type="selection" :disabled="data.current_step > 2" width="55"></el-table-column>
-        <el-table-column sortable prop="left.name" :label="`GT Classes`">
+        <el-table-column sortable prop="left.name" :label="`GT Classes`" width="300">
             <template scope="scope">
                 <div v-if="scope.row.left.name.length > 0">
-                    <i class="zmdi zmdi-circle"></i>
+                    <i class="zmdi zmdi-circle" :style="{color: scope.row.left.color}"></i>
                     <span class="ml5 mr10">{{ scope.row.left.name }}</span>
                     <span style="color: #7f858e;">
                              <i class="zmdi zmdi-shape"></i> {{ scope.row.left.shape }} ({{ scope.row.left.count }} images)
@@ -24,14 +23,14 @@
                 </div>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="left.pixels" :label="`Pixels %`">
+        <el-table-column sortable prop="left.pixels" :label="`Pixels`" align="center">
             <template scope="scope">
                 <span>
-                    {{scope.row.left.pixels}}
+                    {{scope.row.left.area}} %
                 </span>
             </template>
         </el-table-column>
-        <el-table-column label="Comparison Result">
+        <el-table-column sortable label="Comparison Result" width="300" align="center" >
             <template scope="scope">
                 <div v-for="(count, index) in scope.row.statuses.numbers">
                     <div v-if="count !== 0">
@@ -40,21 +39,21 @@
                                     <i v-for="icon in scope.row.statuses.icons[index]" :class="icon"></i>
                                 </span>
                             <span>
-                                    <span v-if="count > 0">{{count}}</span> {{scope.row.statuses.messages[index]}}
+                                    {{scope.row.statuses.messages[index]}} (<span v-if="count > 0">{{count}} images</span>)
                                 </span>
                         </div>
                     </div>
                 </div>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="right.pixels" :label="`Pixels %`">
-            <template scope="scope">
-                <span>
-                    {{scope.row.right.pixels}}
+        <el-table-column sortable prop="right.pixels" :label="`Pixels`" align="center">
+            <template scope="scope" style="text-align: center">
+                <span >
+                    {{scope.row.right.area}} %
                 </span>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="right.name" :label="`PRED Classes`">
+        <el-table-column sortable prop="right.name" :label="`PRED Classes`" width="300"  align="right">
             <template scope="scope">
                 <div v-if="scope.row.right.name.length > 0">
                     <i class="zmdi zmdi-circle" :style="{color: scope.row.right.color}"></i>

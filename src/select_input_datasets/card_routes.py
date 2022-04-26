@@ -29,15 +29,12 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
     card_widgets.select_datasets_button.loading = True
     run_sync(DataJson().synchronize_changes())
 
-    card_functions.get_classes_table_content(selected_datsets)
+    DataJson()['classes_table_content'] = card_functions.get_classes_table_content(selected_datsets,
+                                                                                   g.gt_project_dir,
+                                                                                   g.pred_project_dir)
 
     card_widgets.select_datasets_button.loading = False
     card_widgets.select_datasets_button.disabled = True
     DataJson()['current_step'] += 1
 
     run_sync(DataJson().synchronize_changes())
-
-
-
-
-

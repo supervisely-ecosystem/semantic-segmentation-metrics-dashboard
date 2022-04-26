@@ -43,7 +43,7 @@
                 </div>
             </template>
         </el-table-column>
-        <el-table-column label="Comparison Result">
+        <el-table-column align="center" label="Comparison Result">
             <template scope="scope">
                 <div v-for="(count, index) in scope.row.statuses.numbers">
                     <div v-if="count !== 0">
@@ -52,14 +52,14 @@
                                     <i v-for="icon in scope.row.statuses.icons[index]" :class="icon"></i>
                                 </span>
                             <span>
-                                    <span v-if="count > 0">{{count}}</span> {{scope.row.statuses.messages[index]}}
+                                    {{scope.row.statuses.messages[index]}} (<span v-if="count > 0">{{count}} images</span>)
                                 </span>
                         </div>
                     </div>
                 </div>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="right.name" :label="`PRED Datasets`">
+        <el-table-column sortable align="right" prop="right.name" :label="`PRED Datasets`">
             <template scope="scope">
                 <div v-if="scope.row.right.name.length > 0">
                     <i class="zmdi zmdi-collection-image-o"></i>
