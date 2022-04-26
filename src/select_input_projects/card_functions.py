@@ -20,6 +20,10 @@ def download_project(project_selector_widget: ProjectSelector, state: StateJson,
                                  progress_cb=pbar.update, save_image_info=True)
 
 
+######################################
+#@TODO: move to ProjectsCompare widget
+######################################
+
 def get_dataset_formatted_info(dataset_info: supervisely.Dataset = None):
     if dataset_info is not None:
         items_num = len(dataset_info.get_items_names())
@@ -92,9 +96,6 @@ def get_datasets_table_content(gt_project_dir, pred_project_dir):
                 'UNMATCHED (PRED)',
             ]
         }
-
-        # filter None values
-        # formatted_statuses = [x for x in formatted_statuses if x is not None]
         return formatted_statuses
 
     # reading projects
@@ -133,8 +134,6 @@ def get_datasets_table_content(gt_project_dir, pred_project_dir):
 
     return table_content
 
-    # images_num in gt
-    # images_num in pred
-
-    # matched images
-    # unique images
+######################################
+#@TODO: move to ProjectsCompare widget
+######################################
