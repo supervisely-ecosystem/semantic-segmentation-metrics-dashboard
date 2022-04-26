@@ -9,7 +9,7 @@ from supervisely.sly_logger import logger
 from starlette.staticfiles import StaticFiles
 
 import supervisely
-from supervisely.app.fastapi import create, Jinja2Templates
+from supervisely.app.fastapi import create, Jinja2Templates, enable_hot_reload_on_debug
 
 import dotenv
 
@@ -29,6 +29,7 @@ file_cache = FileCache(name="FileCache", storage_root=app_cache_dir)
 app = FastAPI()
 sly_app = create()
 
+
 app.mount("/sly", sly_app)
 app.mount("/static", StaticFiles(directory=os.path.join(app_root_directory, 'static')), name="static")
 
@@ -41,5 +42,6 @@ gt_project_dir = os.path.join(app_root_directory, 'tempfiles', 'gt_project_dir')
 pred_project_dir = os.path.join(app_root_directory, 'tempfiles', 'pred_project_dir')
 
 # os.makedirs(,)
+
 
 

@@ -33,13 +33,17 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
         card_functions.download_project(project_selector_widget=card_widgets.pred_project_selector,
                                         state=state, project_dir=g.pred_project_dir)
 
+        DataJson()['datasets_table_content'] = card_functions.get_datasets_table_content(
+            gt_project_dir=g.gt_project_dir,
+            pred_project_dir=g.pred_project_dir)
+
         card_widgets.download_projects_button.disabled = True
         DataJson()['current_step'] += 1
     except Exception as ex:
         card_widgets.pred_project_selector.disabled = False
         card_widgets.gt_project_selector.disabled = False
 
-        logger.warn(f'Cannot download projects: {repr(ex)}')
+        logger.warn(f'Cannot download projects: {repr(ex)}', exc_info=True)
         raise HTTPException(status_code=500, detail={'title': "Cannot download projects",
                                                      'message': f'Please select input data and try again'})
 

@@ -21,28 +21,23 @@ import src.sly_globals as g
 
 @card_widgets.select_datasets_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
 def download_selected_projects(state: supervisely.app.StateJson = Depends(supervisely.app.StateJson.from_request)):
-    pass
-    # card_widgets.download_projects_button.loading = True
-    # card_widgets.pred_project_selector.disabled = True
-    # card_widgets.gt_project_selector.disabled = True
-    # run_sync(DataJson().synchronize_changes())
-    #
-    # try:
-    #     card_functions.download_project(project_selector_widget=card_widgets.gt_project_selector,
-    #                                     state=state, project_dir=g.gt_project_dir)
-    #
-    #     card_functions.download_project(project_selector_widget=card_widgets.gt_project_selector,
-    #                                     state=state, project_dir=g.gt_project_dir)
-    #
-    #     card_widgets.download_projects_button.disabled = True
-    #     DataJson()['current_step'] += 1
-    # except Exception as ex:
-    #     card_widgets.pred_project_selector.disabled = False
-    #     card_widgets.gt_project_selector.disabled = False
-    #
-    #     logger.warn(f'Cannot download projects: {repr(ex)}')
-    #     raise HTTPException(status_code=500, detail={'title': "Cannot download projects", 'message': f'Please select input data and try again'})
-    #
-    # finally:
-    #     card_widgets.download_projects_button.loading = False
-    #     run_sync(DataJson().synchronize_changes())
+    selected_datsets = state['selectedDatasets']
+    if len(selected_datsets) == 0:
+        raise HTTPException(status_code=500, detail={'title': "Datasets not selected",
+                                                     'message': f'Please select datasets and try again'})
+
+    card_widgets.select_datasets_button.loading = True
+    run_sync(DataJson().synchronize_changes())
+
+    # card_functions.get_classes_table_content()
+
+    card_widgets.select_datasets_button.loading = False
+    card_widgets.select_datasets_button.disabled = True
+    DataJson()['current_step'] += 1
+
+    run_sync(DataJson().synchronize_changes())
+
+
+
+
+
