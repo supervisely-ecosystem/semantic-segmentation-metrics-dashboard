@@ -1,12 +1,14 @@
 import os
 from datetime import time
 
-import src.select_input_projects.card_widgets as card_widgets
-
-import src.sly_globals as g
 import supervisely
 from supervisely.app import StateJson
 from supervisely.app.widgets import ProjectSelector
+
+import src.select_input_projects.card_widgets as card_widgets
+
+import src.sly_functions as f
+import src.sly_globals as g
 
 
 def download_project(project_selector_widget: ProjectSelector, state: StateJson, project_dir):
@@ -21,7 +23,7 @@ def download_project(project_selector_widget: ProjectSelector, state: StateJson,
 
 
 ######################################
-#@TODO: move to ProjectsCompare widget
+# @TODO: move to ProjectsCompare widget
 ######################################
 
 def get_dataset_formatted_info(dataset_info: supervisely.Dataset = None):
@@ -98,13 +100,9 @@ def get_datasets_table_content(gt_project_dir, pred_project_dir):
         }
         return formatted_statuses
 
-    # reading projects
-    gt_project = supervisely.Project(directory=gt_project_dir, mode=supervisely.OpenMode.READ)
-    pred_project = supervisely.Project(directory=pred_project_dir, mode=supervisely.OpenMode.READ)
-
     # reading datasets
-    gt_datasets = {key: value for key, value in zip(gt_project.datasets.keys(), gt_project.datasets.items())}
-    pred_datasets = {key: value for key, value in zip(pred_project.datasets.keys(), pred_project.datasets.items())}
+    gt_datasets = f.get_datasets_dict_by_project_dir(directory=gt_project_dir)
+    pred_datasets = f.get_datasets_dict_by_project_dir(directory=pred_project_dir)
 
     table_content = []
 
@@ -135,5 +133,5 @@ def get_datasets_table_content(gt_project_dir, pred_project_dir):
     return table_content
 
 ######################################
-#@TODO: move to ProjectsCompare widget
+# @TODO: move to ProjectsCompare widget
 ######################################
