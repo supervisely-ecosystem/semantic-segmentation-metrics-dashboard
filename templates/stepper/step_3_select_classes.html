@@ -8,7 +8,7 @@
               :default-sort="{prop: 'left.name', order: 'ascending'}"
               @selection-change="
                 (val) => {
-                    state.selectedDatasets = val.map(x => x.left.name);
+                    state.selectedClasses = val.map(x => x.left.name);
                 }
                 "
     >
@@ -26,9 +26,9 @@
         </el-table-column>
         <el-table-column sortable prop="left.pixels" :label="`Pixels %`">
             <template scope="scope">
-<!--                <div v-if="scope.row.left.name.length > 0">-->
-<!--                    -->
-<!--                </div>-->
+                <span>
+                    {{scope.row.left.pixels}}
+                </span>
             </template>
         </el-table-column>
         <el-table-column label="Comparison Result">
@@ -49,9 +49,9 @@
         </el-table-column>
         <el-table-column sortable prop="right.pixels" :label="`Pixels %`">
             <template scope="scope">
-<!--                <div v-if="scope.row.left.name.length > 0">-->
-<!--                    -->
-<!--                </div>-->
+                <span>
+                    {{scope.row.right.pixels}}
+                </span>
             </template>
         </el-table-column>
         <el-table-column sortable prop="right.name" :label="`PRED Classes`">
@@ -67,7 +67,7 @@
         </el-table-column>
     </el-table>
     <div style="display:flex; flex-direction:row; justify-content: space-between; align-items: flex-end; margin: 0 5px; margin-top: 15px">
-        <div>{{{ select_datasets_button.to_html() }}}</div>
+        <div>{{{ select_classes_button.to_html() }}}</div>
 
     </div>
 </sly-card>

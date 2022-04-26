@@ -23,7 +23,7 @@ def download_project(project_selector_widget: ProjectSelector, state: StateJson,
 
 
 ######################################
-# @TODO: move to ProjectsCompare widget
+# @TODO: move to DatasetsCompare widget
 ######################################
 
 def get_dataset_formatted_info(dataset_info: supervisely.Dataset = None):
@@ -37,28 +37,12 @@ def get_dataset_formatted_info(dataset_info: supervisely.Dataset = None):
 
 
 def get_datasets_statuses(gt_dataset_info: supervisely.Dataset, pred_dataset_info: supervisely.Dataset):
-    gt_items_names, pred_items_names = set(gt_dataset_info.get_items_names()), \
-                                       set(pred_dataset_info.get_items_names())
-
-    # getting items intersection by names
-    intersected_items_names = list(gt_items_names.intersection(pred_items_names))
-
-    # getting items intersection by hashes
-    matched_images_names: set = set()
-    for item_name_from_intersected in intersected_items_names:
-        gt_image_hash = gt_dataset_info.get_image_info(item_name_from_intersected).hash
-        pred_image_hash = gt_dataset_info.get_image_info(item_name_from_intersected).hash
-
-        if gt_image_hash == pred_image_hash:
-            matched_images_names.add(item_name_from_intersected)
-
-    gt_unique_images: set = gt_items_names.difference(matched_images_names)
-    pred_unique_images: set = pred_items_names.difference(matched_images_names)
+    matched_and_unmatched_images_names = f.get_matched_and_unmatched_images_names(gt_dataset_info, pred_dataset_info)
 
     return {
-        'matched': len(matched_images_names),
-        'gt_unique': len(gt_unique_images),
-        'pred_unique': len(pred_unique_images)
+        'matched': len(matched_and_unmatched_images_names['matched_images_names']),
+        'gt_unique': len(matched_and_unmatched_images_names['gt_unique_images_names']),
+        'pred_unique': len(matched_and_unmatched_images_names['pred_unique_images_names'])
     }
 
 
@@ -129,6 +113,17 @@ def get_datasets_table_content(gt_project_dir, pred_project_dir):
         row_in_table['statuses'] = format_dataset_statuses(unformatted_statuses)
 
         table_content.append(row_in_table)
+
+    # don't forget about right unique side
+    for pred_ds_name, pred_dataset_info in pred_datasets.items():
+
+        if gt_datasets.get(pred_ds_name) is None:
+            row_in_table = {
+                'left': get_dataset_formatted_info(),
+                'right': get_dataset_formatted_info(pred_dataset_info),
+                'statuses': format_dataset_statuses({'gt_unmatched': -1})
+            }
+            table_content.append(row_in_table)
 
     return table_content
 
