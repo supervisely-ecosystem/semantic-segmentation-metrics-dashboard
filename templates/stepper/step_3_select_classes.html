@@ -1,0 +1,73 @@
+<sly-card title="Select Classes" subtitle="select datasets to calculate metrics on">
+
+
+    <el-table class="ultra-table"
+              :data="data.datasets_table_content"
+              :disabled="data.current_step > 2"
+              style="width: 100%"
+              :default-sort="{prop: 'left.name', order: 'ascending'}"
+              @selection-change="
+                (val) => {
+                    state.selectedDatasets = val.map(x => x.left.name);
+                }
+                "
+    >
+        <el-table-column type="selection" :disabled="data.current_step > 2" width="55"></el-table-column>
+        <el-table-column sortable prop="left.name" :label="`GT Classes`">
+            <template scope="scope">
+                <div v-if="scope.row.left.name.length > 0">
+                    <i class="zmdi zmdi-circle"></i>
+                    <span class="ml5 mr10">{{ scope.row.left.name }}</span>
+                    <span style="color: #7f858e;">
+                             <i class="zmdi zmdi-shape"></i> {{ scope.row.left.shape }} ({{ scope.row.left.count }} images)
+                        </span>
+                </div>
+            </template>
+        </el-table-column>
+        <el-table-column sortable prop="left.pixels" :label="`Pixels %`">
+            <template scope="scope">
+<!--                <div v-if="scope.row.left.name.length > 0">-->
+<!--                    -->
+<!--                </div>-->
+            </template>
+        </el-table-column>
+        <el-table-column label="Comparison Result">
+            <template scope="scope">
+                <div v-for="(count, index) in scope.row.statuses.numbers">
+                    <div v-if="count !== 0">
+                        <div style="margin: 3px 0" :style="{color: scope.row.statuses.colors[index]}">
+                                <span style="width: 25px; display: inline-block">
+                                    <i v-for="icon in scope.row.statuses.icons[index]" :class="icon"></i>
+                                </span>
+                            <span>
+                                    <span v-if="count > 0">{{count}}</span> {{scope.row.statuses.messages[index]}}
+                                </span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </el-table-column>
+        <el-table-column sortable prop="right.pixels" :label="`Pixels %`">
+            <template scope="scope">
+<!--                <div v-if="scope.row.left.name.length > 0">-->
+<!--                    -->
+<!--                </div>-->
+            </template>
+        </el-table-column>
+        <el-table-column sortable prop="right.name" :label="`PRED Classes`">
+            <template scope="scope">
+                <div v-if="scope.row.right.name.length > 0">
+                    <i class="zmdi zmdi-circle" :style="{color: scope.row.right.color}"></i>
+                    <span class="ml5 mr10">{{ scope.row.right.name }}</span>
+                    <span style="color: #7f858e;">
+                             <i class="zmdi zmdi-shape"></i> {{ scope.row.right.shape }} ({{ scope.row.right.count }} images)
+                        </span>
+                </div>
+            </template>
+        </el-table-column>
+    </el-table>
+    <div style="display:flex; flex-direction:row; justify-content: space-between; align-items: flex-end; margin: 0 5px; margin-top: 15px">
+        <div>{{{ select_datasets_button.to_html() }}}</div>
+
+    </div>
+</sly-card>
