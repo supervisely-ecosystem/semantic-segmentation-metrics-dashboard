@@ -1,4 +1,4 @@
-<sly-card title="Select Classes" subtitle="select datasets to calculate metrics on">
+<sly-card title="Select Classes" subtitle="select classes to calculate metrics on">
 
 
     <el-table class="ultra-table"
@@ -67,6 +67,12 @@
     </el-table>
     <div style="display:flex; flex-direction:row; justify-content: space-between; align-items: flex-end; margin: 0 5px; margin-top: 15px">
         <div>{{{ select_classes_button.to_html() }}}</div>
+        <div style="margin-bottom: 4px; width: 464px">
+            {{{ select_classes_progress.to_html() }}}
+        </div>
+        <div>
+            <span><i class="zmdi zmdi-shape"></i> <b>background class</b> will be added automatically to statistics</span>
+        </div>
 
     </div>
 </sly-card>

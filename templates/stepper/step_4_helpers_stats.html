@@ -1,0 +1,13 @@
+<sly-card title="Metrics Dashboard" subtitle="semantic segmentation metrics dashboard">
+    <div style="margin: 0 20px;
+    display: flex; flex-direction: row; align-items:center; justify-content: space-between;">
+        <div>
+            <h2>Pixel Accuracy: {{ data.pixel_accuracy }}</h2>
+            <h2>Mean IoU: {{ data.iou }}</h2>
+        </div>
+        <div>
+            {{{ open_iri_button.to_html() }}}
+        </div>
+    </div>
+
+</sly-card>

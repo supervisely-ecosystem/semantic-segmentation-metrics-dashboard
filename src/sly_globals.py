@@ -41,6 +41,8 @@ DataJson()['current_step'] = 1
 gt_project_dir = os.path.join(app_root_directory, 'tempfiles', 'gt_project_dir')
 pred_project_dir = os.path.join(app_root_directory, 'tempfiles', 'pred_project_dir')
 
+gt_project_dir_converted = os.path.join(app_root_directory, 'tempfiles', 'gt_project_dir_converted')
+pred_project_dir_converted = os.path.join(app_root_directory, 'tempfiles', 'pred_project_dir_converted')
 # os.makedirs(,)
 
 
