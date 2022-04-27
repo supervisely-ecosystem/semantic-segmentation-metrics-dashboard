@@ -103,7 +103,9 @@ def get_datasets_table_content(gt_project_dir, pred_project_dir):
 
             unformatted_statuses.update(get_datasets_statuses(gt_dataset_info, pred_dataset_info))
             if unformatted_statuses['matched'] == 0:
-                unformatted_statuses.update({'all_unmatched': -1})
+                unformatted_statuses.update({'all_unmatched': -1,
+                                             'gt_unique': 0,
+                                             'pred_unique': 0})
 
         else:
             row_in_table['left'] = get_dataset_formatted_info(gt_dataset_info)

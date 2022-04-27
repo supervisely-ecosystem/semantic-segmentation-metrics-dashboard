@@ -12,7 +12,7 @@
                 }"
     >
         <el-table-column type="selection" :disabled="data.current_step > 2" width="55"></el-table-column>
-        <el-table-column sortable prop="left.name" :label="`GT Classes`" width="300">
+        <el-table-column sortable prop="left.name" :label="`GT Classes`" width="380px">
             <template scope="scope">
                 <div v-if="scope.row.left.name.length > 0">
                     <i class="zmdi zmdi-circle" :style="{color: scope.row.left.color}"></i>
@@ -23,14 +23,14 @@
                 </div>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="left.pixels" :label="`Pixels`" align="center">
+        <el-table-column sortable prop="left.area" :label="`Pixels`" align="center">
             <template scope="scope">
                 <span>
                     {{scope.row.left.area}} %
                 </span>
             </template>
         </el-table-column>
-        <el-table-column sortable label="Comparison Result" width="300" align="center" >
+        <el-table-column label="Comparison Result" width="300" align="center" >
             <template scope="scope">
                 <div v-for="(count, index) in scope.row.statuses.numbers">
                     <div v-if="count !== 0">
@@ -39,21 +39,21 @@
                                     <i v-for="icon in scope.row.statuses.icons[index]" :class="icon"></i>
                                 </span>
                             <span>
-                                    {{scope.row.statuses.messages[index]}} (<span v-if="count > 0">{{count}} images</span>)
+                                    {{scope.row.statuses.messages[index]}} <span v-if="count > 0">({{count}} images)</span>
                                 </span>
                         </div>
                     </div>
                 </div>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="right.pixels" :label="`Pixels`" align="center">
+        <el-table-column sortable prop="right.area" :label="`Pixels`" align="center">
             <template scope="scope" style="text-align: center">
                 <span >
                     {{scope.row.right.area}} %
                 </span>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="right.name" :label="`PRED Classes`" width="300"  align="right">
+        <el-table-column sortable prop="right.name" :label="`PRED Classes`" width="380px"  align="right">
             <template scope="scope">
                 <div v-if="scope.row.right.name.length > 0">
                     <i class="zmdi zmdi-circle" :style="{color: scope.row.right.color}"></i>

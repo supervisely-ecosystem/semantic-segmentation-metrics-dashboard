@@ -52,7 +52,7 @@
                                     <i v-for="icon in scope.row.statuses.icons[index]" :class="icon"></i>
                                 </span>
                             <span>
-                                    {{scope.row.statuses.messages[index]}} (<span v-if="count > 0">{{count}} images</span>)
+                                    {{scope.row.statuses.messages[index]}} <span v-if="count > 0">({{count}} images)</span>
                                 </span>
                         </div>
                     </div>

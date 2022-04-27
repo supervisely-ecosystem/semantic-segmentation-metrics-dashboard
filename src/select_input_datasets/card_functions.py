@@ -1,32 +1,12 @@
-from datetime import time
-
 import numpy
 
-import src.select_input_projects.card_widgets as card_widgets
-
 import src.sly_functions as f
-import src.sly_globals as g
 import supervisely
-from supervisely.app import StateJson, DataJson
-from supervisely.app.widgets import ProjectSelector
 
 
-#
-# def get_metas_intersection(gt_meta, pred_meta):
-#     aggregated_meta = {'classes': [], 'tags': [dict], 'projectType': 'images'}
-#     for i in gt_meta['classes']:
-#         for j in pred_meta['classes']:
-#             if i['title'] == j['title'] and i['shape'] == j['shape']:
-#                 aggregated_meta['classes'].append(i)
-#     for i in gt_meta['tags']:
-#         aggregated_meta['tags'].append(i)
-#
-#     tag_names = [i['name'] for i in aggregated_meta['tags']]
-#     for j in pred_meta['tags']:
-#         if j['name'] not in tag_names:
-#             aggregated_meta['tags'].append(j)
-#
-#     return supervisely.ProjectMeta.from_json(aggregated_meta)
+######################################
+# @TODO: move to ClassesCompare widget
+######################################
 
 def update_objects_info(objects_info, image_annotation):
     objects_on_image = set([label.obj_class for label in image_annotation.labels])
@@ -121,7 +101,7 @@ def get_classes_statuses(gt_class_stats, pred_class_stats):
     return {
         'matched': 0,
         'converted': -1 if shapes_converted and not shapes_unmatched else 0,
-        'shape_unmatched': -1 if shapes_unmatched else 0
+        'unmatched': -1 if shapes_unmatched else 0
     }
 
 
@@ -136,13 +116,13 @@ def get_formatted_table_content(objects_info):
             ],
             'colors': [
                 '#008000FF',
-                '#20A0FFFF',
+                '#0487d7',
                 '#FF0000FF',
                 '#FF0000FF',
             ],
             'icons': [
                 ["zmdi zmdi-check"],
-                ["zmdi zmdi-plus-circle-o"],
+                ["zmdi zmdi-ungroup"],
                 ["zmdi zmdi-close"],
                 ["zmdi zmdi-close"],
             ],
@@ -168,8 +148,12 @@ def get_formatted_table_content(objects_info):
             row_in_table['right'] = get_class_formatted_info(pred_class_stats)
 
             unformatted_statuses.update(get_classes_statuses(gt_class_stats, pred_class_stats))
-            if unformatted_statuses['shape_unmatched'] != -1:
+            if unformatted_statuses['unmatched'] != -1 and unformatted_statuses['converted'] != -1:
                 unformatted_statuses['matched'] = objects_info['matched'][gt_class_name]
+            elif unformatted_statuses['converted'] == -1:
+                unformatted_statuses['converted'] = objects_info['matched'][gt_class_name]
+
+
         else:
             row_in_table['left'] = get_class_formatted_info(gt_class_stats)
             row_in_table['right'] = get_class_formatted_info()
@@ -207,3 +191,7 @@ def get_classes_table_content(selected_datasets_names, gt_project_dir, pred_proj
     convert_areas_to_percentage(objects_info['pred'])
 
     return get_formatted_table_content(objects_info)
+
+######################################
+# @TODO: move to ClassesCompare widget
+######################################
