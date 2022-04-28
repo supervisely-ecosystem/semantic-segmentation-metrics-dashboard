@@ -2,6 +2,9 @@ import os
 
 import supervisely
 
+import src.sly_globals as g
+
+
 def get_project_items_count(directory):
     return supervisely.Project(directory=directory, mode=supervisely.OpenMode.READ).total_items
 
@@ -36,20 +39,39 @@ def get_matched_and_unmatched_images_names(gt_dataset_info, pred_dataset_info):
     }
 
 
-def add_bg_object_to_all_images(src_project_dir):
+def add_bg_object_to_image(dataset: supervisely.Dataset, item_name, pr_meta):
+    img_info = dataset.get_image_info(item_name)
+    annotation: supervisely.Annotation = dataset.get_ann(item_name, pr_meta)
+    rectangle = supervisely.Rectangle.from_size(annotation.img_size)
+
+    # [for annotation.labels]
     pass
 
 
-def convert_project_to_semantic_segmentation_task(src_project_dir, dst_project_dir=None, target_classes_names_list=None,
-                                                  add_bg_class=False, progress_cb=None):
+def add_bg_object_to_all_images(project_dir):
+    pr_meta = supervisely.Project(directory=project_dir, mode=supervisely.OpenMode.READ).meta
+    if pr_meta.obj_classes.get(g.bg_class_name) is None:
+        pr_meta = pr_meta.add_obj_class(supervisely.ObjClass(g.bg_class_name, supervisely.Bitmap, color=[0, 0, 0]))
 
-    # if add_bg_class is True:
-    #     add_bg_object_to_all_images(src_project_dir)
+    datasets = get_datasets_dict_by_project_dir(project_dir)
+
+    dataset: supervisely.Dataset
+    for ds_name, dataset in datasets.items():
+        # items_names = ds_info.get_items_names()
+
+        items_names = g.ds2matched[ds_name]
+
+        for item_name in items_names:
+            add_bg_object_to_image(dataset=dataset, item_name=item_name, pr_meta=pr_meta)
+
+
+def convert_project_to_semantic_segmentation_task(src_project_dir, dst_project_dir=None,
+                                                  target_classes_names_list=None, progress_cb=None):
 
     if dst_project_dir is not None and os.path.isdir(dst_project_dir):
         supervisely.fs.clean_dir(dst_project_dir)
+
     supervisely.Project.to_segmentation_task(src_project_dir=src_project_dir,
                                              dst_project_dir=dst_project_dir,
                                              target_classes=target_classes_names_list,
-                                             inplace=True if dst_project_dir is None else False,
                                              progress_cb=progress_cb)

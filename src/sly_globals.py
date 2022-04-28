@@ -48,6 +48,8 @@ ds2matched = {}
 
 datasets_names_to_analyze = []
 
+bg_class_name = '__bg__'
+
 
 
 

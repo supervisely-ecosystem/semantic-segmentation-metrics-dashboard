@@ -41,16 +41,11 @@ def update_matched_info(matched_objects_info, gt_image_annotation, pred_image_an
 
 
 def update_objects_areas(objects_info, image_annotation):
-    objects_on_image = set([label.obj_class for label in image_annotation.labels])
-    labels_area = sum([label.area for label in image_annotation.labels])
+    name2area = {label.obj_class.name: label.area for label in image_annotation.labels}
 
-    for object_on_image in objects_on_image:
-        objects_info.setdefault(object_on_image.name, {
-            'area': 0,
-            'name': object_on_image.name,
-        })
-
-        objects_info[object_on_image.name]['area'] += labels_area
+    for name, area in name2area.items():
+        if objects_info.get(name) is not None:
+            objects_info[name]['area'] += area
 
 
 def collect_objects_information(objects_info, selected_datasets_names, gt_project_dir, pred_project_dir,
@@ -94,8 +89,6 @@ def collect_objects_information(objects_info, selected_datasets_names, gt_projec
 
             else:
                 raise ValueError('mode must be info or area')
-
-
 
 
 def convert_areas_to_percentage(objects_info):

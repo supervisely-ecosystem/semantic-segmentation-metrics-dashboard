@@ -9,7 +9,8 @@ from supervisely.app import DataJson
 
 
 def calculate_base_metrics(gt_project_dir, pred_project_dir):
-    pixel_accuracy = 0
+    pixel_accuracy = []
+    mean_iou = []
 
     ds_names = DataJson()['selected_datasets_names']
     cls_names = DataJson()['selected_classes_names']
@@ -24,8 +25,13 @@ def calculate_base_metrics(gt_project_dir, pred_project_dir):
         gt_ds_info: supervisely.Dataset = gt_datasets[ds_name]
         pred_ds_info: supervisely.Dataset = pred_datasets[ds_name]
 
-        images_names = f.get_matched_and_unmatched_images_names(gt_ds_info, pred_ds_info)['matched_images_names']
+        images_names = g.ds2matched[ds_name]
 
         for image_name in images_names:
             gt_ann = gt_ds_info.get_ann(image_name, gt_project_meta)
             pred_ann = pred_ds_info.get_ann(image_name, pred_project_meta)
+
+
+
+
+
