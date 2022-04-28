@@ -6,6 +6,7 @@ from supervisely.app.fastapi import run_sync
 from supervisely.app.widgets import ElementButton
 
 import src.sly_globals as g
+import src.sly_functions as f
 
 import src.select_input_classes.card_widgets as card_widgets
 import src.select_input_classes.card_functions as card_functions
@@ -13,14 +14,30 @@ import src.select_input_classes.card_functions as card_functions
 
 @card_widgets.select_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
 def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.app.StateJson.from_request)):
-    selected_classes = state['selectedClasses']
-    if len(selected_classes) == 0:
-        raise HTTPException(status_code=500, detail={'title': "Classes not selected",
+    selected_classes_names = set(state['selectedClasses'])
+    selected_classes_names = list(set(selected_classes_names).intersection(set(DataJson()['allowed_classes_names'])))
+    if len(selected_classes_names) == 0:
+        raise HTTPException(status_code=500, detail={'title': "Matched or Converted classes not selected",
                                                      'message': f'Please select classes and try again'})
 
     card_widgets.select_classes_button.loading = True
+    run_sync(DataJson().synchronize_changes())
 
-    card_functions.convert_projects_to_semantic_segmentation_task(selected_classes)
+    DataJson()['selected_classes_names'] = selected_classes_names
+
+    # selected_classes_names.append('__bg__')
+
+    f.convert_project_to_semantic_segmentation_task(selected_classes_names,
+                                                    src_project_dir=g.gt_project_dir,
+                                                    dst_project_dir=g.gt_project_dir_converted)
+
+    f.convert_project_to_semantic_segmentation_task(selected_classes_names,
+                                                    src_project_dir=g.pred_project_dir,
+                                                    dst_project_dir=g.pred_project_dir_converted)
+
+    # card_functions.convert_project_to_semantic_segmentation_task(selected_classes_names)
+    # card_functions.calculate_base_metrics(gt_project_dir=g.gt_project_dir_converted,
+    #                                       pred_project_dir=g.pred_project_dir_converted)
 
     # fill tables and matrix
 
@@ -32,10 +49,3 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
 
     run_sync(StateJson().synchronize_changes())
     run_sync(DataJson().synchronize_changes())
-
-
-
-
-
-
-

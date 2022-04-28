@@ -1,16 +1,19 @@
 import numpy
 
 import src.sly_functions as f
+import src.sly_globals as g
 import supervisely
 
 
 ######################################
 # @TODO: move to ClassesCompare widget
 ######################################
+from supervisely.app import DataJson
+
 
 def update_objects_info(objects_info, image_annotation):
     objects_on_image = set([label.obj_class for label in image_annotation.labels])
-    labels_area = sum([label.area for label in image_annotation.labels])
+    # labels_area = sum([label.area for label in image_annotation.labels])
 
     for object_on_image in objects_on_image:
         objects_info.setdefault(object_on_image.name, {
@@ -22,10 +25,9 @@ def update_objects_info(objects_info, image_annotation):
         })
 
         objects_info[object_on_image.name]['count'] += 1
-        objects_info[object_on_image.name]['area'] += labels_area
+        # objects_info[object_on_image.name]['area'] += labels_area
 
-    objects_info['images_area'] = objects_info.get('images_area', 0) + \
-                                            numpy.prod(image_annotation.img_size)
+    objects_info['images_area'] = objects_info.get('images_area', 0) + numpy.prod(image_annotation.img_size)
 
 
 def update_matched_info(matched_objects_info, gt_image_annotation, pred_image_annotation):
@@ -38,7 +40,21 @@ def update_matched_info(matched_objects_info, gt_image_annotation, pred_image_an
         matched_objects_info[intersected_name] = matched_objects_info.get(intersected_name, 0) + 1
 
 
-def collect_objects_information(objects_info, selected_datasets_names, gt_project_dir, pred_project_dir):
+def update_objects_areas(objects_info, image_annotation):
+    objects_on_image = set([label.obj_class for label in image_annotation.labels])
+    labels_area = sum([label.area for label in image_annotation.labels])
+
+    for object_on_image in objects_on_image:
+        objects_info.setdefault(object_on_image.name, {
+            'area': 0,
+            'name': object_on_image.name,
+        })
+
+        objects_info[object_on_image.name]['area'] += labels_area
+
+
+def collect_objects_information(objects_info, selected_datasets_names, gt_project_dir, pred_project_dir,
+                                collect_matched_images_names=True, mode='info'):
     gt_project_meta = supervisely.Project(directory=gt_project_dir, mode=supervisely.OpenMode.READ).meta
     pred_project_meta = supervisely.Project(directory=pred_project_dir, mode=supervisely.OpenMode.READ).meta
 
@@ -53,19 +69,33 @@ def collect_objects_information(objects_info, selected_datasets_names, gt_projec
         if pred_dataset_info is None or gt_dataset_info is None:
             continue
 
-        images_names = f.get_matched_and_unmatched_images_names(gt_dataset_info=gt_dataset_info,
-                                                                pred_dataset_info=pred_dataset_info)
+        if collect_matched_images_names is True:
+            images_names = f.get_matched_and_unmatched_images_names(gt_dataset_info=gt_dataset_info,
+                                                                    pred_dataset_info=pred_dataset_info)
+            g.ds2matched[selected_ds_name] = images_names
+        else:
+            images_names = g.ds2matched[selected_ds_name]
 
         for matched_image_name in images_names['matched_images_names']:
             gt_image_ann: supervisely.Annotation = gt_dataset_info.get_ann(matched_image_name, gt_project_meta)
             pred_image_ann: supervisely.Annotation = pred_dataset_info.get_ann(matched_image_name, pred_project_meta)
 
-            # getting stats for each class
-            update_objects_info(objects_info['gt'], gt_image_ann)
-            update_objects_info(objects_info['pred'], pred_image_ann)
+            if mode == 'info':
+                # getting stats for each class
+                update_objects_info(objects_info['gt'], gt_image_ann)
+                update_objects_info(objects_info['pred'], pred_image_ann)
 
-            # getting stats for matched classes
-            update_matched_info(objects_info['matched'], gt_image_ann, pred_image_ann)
+                # getting stats for matched classes
+                update_matched_info(objects_info['matched'], gt_image_ann, pred_image_ann)
+
+            elif mode == 'area':
+                update_objects_areas(objects_info['gt'], gt_image_ann)
+                update_objects_areas(objects_info['pred'], pred_image_ann)
+
+            else:
+                raise ValueError('mode must be info or area')
+
+
 
 
 def convert_areas_to_percentage(objects_info):
@@ -135,6 +165,7 @@ def get_formatted_table_content(objects_info):
         }
         return formatted_statuses
 
+    DataJson()['allowed_classes_names'] = []
     table_content = []
 
     for gt_class_name, gt_class_stats in objects_info['gt'].items():
@@ -153,6 +184,9 @@ def get_formatted_table_content(objects_info):
             elif unformatted_statuses['converted'] == -1:
                 unformatted_statuses['converted'] = objects_info['matched'][gt_class_name]
 
+            if unformatted_statuses['unmatched'] != -1:
+                DataJson()['allowed_classes_names'].append(gt_class_name)
+
         else:
             row_in_table['left'] = get_class_formatted_info(gt_class_stats)
             row_in_table['right'] = get_class_formatted_info()
@@ -162,21 +196,20 @@ def get_formatted_table_content(objects_info):
 
         table_content.append(row_in_table)
 
-    # # don't forget about right unique side
-    # for pred_ds_name, pred_dataset_info in pred_datasets.items():
-    #
-    #     if gt_datasets.get(pred_ds_name) is None:
-    #         row_in_table = {
-    #             'left': get_dataset_formatted_info(),
-    #             'right': get_dataset_formatted_info(pred_dataset_info),
-    #             'statuses': format_dataset_statuses({'gt_unmatched': -1})
-    #         }
-    #         table_content.append(row_in_table)
+    # don't forget about right unique side
+    for pred_class_name, pred_class_stats in objects_info['pred'].items():
+        if objects_info['gt'].get(pred_class_name) is None:
+            row_in_table = {
+                'left': get_class_formatted_info(),
+                'right': get_class_formatted_info(pred_class_stats),
+                'statuses': format_statuses({'pair_unmatched': -1})
+            }
+            table_content.append(row_in_table)
 
     return table_content
 
 
-def get_classes_table_content(selected_datasets_names, gt_project_dir, pred_project_dir):
+def get_classes_table_content(selected_datasets_names):
     objects_info = {
         'gt': {},
         'pred': {},
@@ -184,7 +217,10 @@ def get_classes_table_content(selected_datasets_names, gt_project_dir, pred_proj
     }
 
     # collecting objects information
-    collect_objects_information(objects_info, selected_datasets_names, gt_project_dir, pred_project_dir)
+    collect_objects_information(objects_info, selected_datasets_names, g.gt_project_dir, g.pred_project_dir)
+    collect_objects_information(objects_info, selected_datasets_names,
+                                g.gt_project_dir_converted, g.pred_project_dir_converted,
+                                collect_matched_images_names=False, mode='area')
 
     convert_areas_to_percentage(objects_info['gt'])
     convert_areas_to_percentage(objects_info['pred'])

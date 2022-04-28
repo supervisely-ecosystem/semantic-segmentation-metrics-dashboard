@@ -43,7 +43,11 @@ pred_project_dir = os.path.join(app_root_directory, 'tempfiles', 'pred_project_d
 
 gt_project_dir_converted = os.path.join(app_root_directory, 'tempfiles', 'gt_project_dir_converted')
 pred_project_dir_converted = os.path.join(app_root_directory, 'tempfiles', 'pred_project_dir_converted')
-# os.makedirs(,)
+
+ds2matched = {}
+
+datasets_names_to_analyze = []
+
 
 
 

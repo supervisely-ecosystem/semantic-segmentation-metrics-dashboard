@@ -7,4 +7,8 @@ DataJson()['datasets_table_content'] = None
 StateJson()['selectedDatasets'] = []
 
 
+DataJson()['allowed_datasets_names'] = []
+DataJson()['selected_datasets_names'] = []
+
+
 

@@ -21,20 +21,22 @@ import src.sly_globals as g
 
 @card_widgets.select_datasets_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
 def download_selected_projects(state: supervisely.app.StateJson = Depends(supervisely.app.StateJson.from_request)):
-    selected_datsets = state['selectedDatasets']
-    if len(selected_datsets) == 0:
-        raise HTTPException(status_code=500, detail={'title': "Datasets not selected",
+    selected_datasets_names = state['selectedDatasets']
+
+    selected_datasets_names = list(set(selected_datasets_names).intersection(set(DataJson()['allowed_datasets_names'])))
+
+    if len(selected_datasets_names) == 0:
+        raise HTTPException(status_code=500, detail={'title': "Matched datasets not selected",
                                                      'message': f'Please select datasets and try again'})
 
     card_widgets.select_datasets_button.loading = True
     run_sync(DataJson().synchronize_changes())
 
-    DataJson()['classes_table_content'] = card_functions.get_classes_table_content(selected_datsets,
-                                                                                   g.gt_project_dir,
-                                                                                   g.pred_project_dir)
+    DataJson()['classes_table_content'] = card_functions.get_classes_table_content(selected_datasets_names)
 
     card_widgets.select_datasets_button.loading = False
     card_widgets.select_datasets_button.disabled = True
     DataJson()['current_step'] += 1
+    DataJson()['selected_datasets_names'] = selected_datasets_names
 
     run_sync(DataJson().synchronize_changes())

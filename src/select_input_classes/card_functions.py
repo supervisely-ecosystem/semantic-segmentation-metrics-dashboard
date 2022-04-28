@@ -2,31 +2,30 @@ import time
 
 import supervisely
 import src.sly_globals as g
+import src.sly_functions as f
 
 import src.select_input_classes.card_widgets as card_widgets
+from supervisely.app import DataJson
 
 
-def convert_projects_to_semantic_segmentation_task(target_classes_names_list):
-    progress_cb = card_widgets.select_classes_progress(message='GT project to Segmentation Task',
-                                                       total=supervisely.Project(g.gt_project_dir,
-                                                                                 supervisely.OpenMode.READ).total_items)
+def calculate_base_metrics(gt_project_dir, pred_project_dir):
+    pixel_accuracy = 0
 
-    supervisely.fs.clean_dir(g.gt_project_dir_converted)
-    supervisely.Project.to_segmentation_task(src_project_dir=g.gt_project_dir,
-                                             dst_project_dir=g.gt_project_dir_converted,
-                                             target_classes=target_classes_names_list,
-                                             progress_cb=progress_cb.update)
+    ds_names = DataJson()['selected_datasets_names']
+    cls_names = DataJson()['selected_classes_names']
 
-    progress_cb = card_widgets.select_classes_progress(message='PRED project to Segmentation Task',
-                                                       total=supervisely.Project(g.pred_project_dir,
-                                                                                 supervisely.OpenMode.READ).total_items)
+    gt_project_meta = supervisely.Project(directory=gt_project_dir, mode=supervisely.OpenMode.READ).meta
+    pred_project_meta = supervisely.Project(directory=pred_project_dir, mode=supervisely.OpenMode.READ).meta
 
-    supervisely.fs.clean_dir(g.pred_project_dir_converted)
-    supervisely.Project.to_segmentation_task(src_project_dir=g.pred_project_dir,
-                                             dst_project_dir=g.pred_project_dir_converted,
-                                             target_classes=target_classes_names_list,
-                                             progress_cb=progress_cb.update)
+    gt_datasets = f.get_datasets_dict_by_project_dir(gt_project_dir)
+    pred_datasets = f.get_datasets_dict_by_project_dir(pred_project_dir)
 
-    progress_cb.close()
+    for ds_name in ds_names:
+        gt_ds_info: supervisely.Dataset = gt_datasets[ds_name]
+        pred_ds_info: supervisely.Dataset = pred_datasets[ds_name]
 
+        images_names = f.get_matched_and_unmatched_images_names(gt_ds_info, pred_ds_info)['matched_images_names']
 
+        for image_name in images_names:
+            gt_ann = gt_ds_info.get_ann(image_name, gt_project_meta)
+            pred_ann = pred_ds_info.get_ann(image_name, pred_project_meta)

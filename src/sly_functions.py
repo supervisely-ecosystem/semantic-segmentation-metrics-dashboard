@@ -1,5 +1,9 @@
+import os
+
 import supervisely
 
+def get_project_items_count(directory):
+    return supervisely.Project(directory=directory, mode=supervisely.OpenMode.READ).total_items
 
 def get_datasets_dict_by_project_dir(directory):
     project = supervisely.Project(directory=directory, mode=supervisely.OpenMode.READ)
@@ -30,3 +34,22 @@ def get_matched_and_unmatched_images_names(gt_dataset_info, pred_dataset_info):
         'pred_unique_images_names': pred_unique_images_names
 
     }
+
+
+def add_bg_object_to_all_images(src_project_dir):
+    pass
+
+
+def convert_project_to_semantic_segmentation_task(src_project_dir, dst_project_dir=None, target_classes_names_list=None,
+                                                  add_bg_class=False, progress_cb=None):
+
+    # if add_bg_class is True:
+    #     add_bg_object_to_all_images(src_project_dir)
+
+    if dst_project_dir is not None and os.path.isdir(dst_project_dir):
+        supervisely.fs.clean_dir(dst_project_dir)
+    supervisely.Project.to_segmentation_task(src_project_dir=src_project_dir,
+                                             dst_project_dir=dst_project_dir,
+                                             target_classes=target_classes_names_list,
+                                             inplace=True if dst_project_dir is None else False,
+                                             progress_cb=progress_cb)

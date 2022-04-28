@@ -2,7 +2,7 @@ import os
 from datetime import time
 
 import supervisely
-from supervisely.app import StateJson
+from supervisely.app import StateJson, DataJson
 from supervisely.app.widgets import ProjectSelector
 
 import src.select_input_projects.card_widgets as card_widgets
@@ -84,6 +84,8 @@ def get_datasets_table_content(gt_project_dir, pred_project_dir):
         }
         return formatted_statuses
 
+    DataJson()['allowed_datasets_names'] = []
+
     # reading datasets
     gt_datasets = f.get_datasets_dict_by_project_dir(directory=gt_project_dir)
     pred_datasets = f.get_datasets_dict_by_project_dir(directory=pred_project_dir)
@@ -106,6 +108,8 @@ def get_datasets_table_content(gt_project_dir, pred_project_dir):
                 unformatted_statuses.update({'all_unmatched': -1,
                                              'gt_unique': 0,
                                              'pred_unique': 0})
+            else:
+                DataJson()['allowed_datasets_names'].append(gt_ds_name)
 
         else:
             row_in_table['left'] = get_dataset_formatted_info(gt_dataset_info)

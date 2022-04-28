@@ -17,6 +17,7 @@ from supervisely.app.fastapi import run_sync
 from supervisely.app.widgets import ElementButton
 
 import src.sly_globals as g
+import src.sly_functions as f
 
 
 @card_widgets.download_projects_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
@@ -32,6 +33,19 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
 
         card_functions.download_project(project_selector_widget=card_widgets.pred_project_selector,
                                         state=state, project_dir=g.pred_project_dir)
+
+        with card_widgets.download_projects_progress(message='converting GT project',
+                                                     total=f.get_project_items_count(g.gt_project_dir)) as pbar:
+
+            f.convert_project_to_semantic_segmentation_task(src_project_dir=g.gt_project_dir,
+                                                            dst_project_dir=g.gt_project_dir_converted,
+                                                            progress_cb=pbar.update)
+
+        with card_widgets.download_projects_progress(message='converting PRED project',
+                                                     total=f.get_project_items_count(g.gt_project_dir)) as pbar:
+            f.convert_project_to_semantic_segmentation_task(src_project_dir=g.pred_project_dir,
+                                                            dst_project_dir=g.pred_project_dir_converted,
+                                                            progress_cb=pbar.update)
 
         DataJson()['datasets_table_content'] = card_functions.get_datasets_table_content(
             gt_project_dir=g.gt_project_dir,
