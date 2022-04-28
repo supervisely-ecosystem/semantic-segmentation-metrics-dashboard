@@ -153,7 +153,6 @@ def get_formatted_table_content(objects_info):
             elif unformatted_statuses['converted'] == -1:
                 unformatted_statuses['converted'] = objects_info['matched'][gt_class_name]
 
-
         else:
             row_in_table['left'] = get_class_formatted_info(gt_class_stats)
             row_in_table['right'] = get_class_formatted_info()
