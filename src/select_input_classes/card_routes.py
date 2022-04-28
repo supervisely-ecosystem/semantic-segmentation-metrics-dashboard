@@ -1,4 +1,3 @@
-import pbar as pbar
 from fastapi import Depends, HTTPException
 
 import supervisely
@@ -26,22 +25,10 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
 
     DataJson()['selected_classes_names'] = selected_classes_names
 
-    with card_widgets.select_classes_progress(message='applying classes to GT',
-                                              total=f.get_project_items_count(g.gt_project_dir)) as pbar:
-        f.convert_project_to_semantic_segmentation_task(target_classes_names_list=selected_classes_names,
-                                                        src_project_dir=g.gt_project_dir,
-                                                        dst_project_dir=g.gt_project_dir_converted,
-                                                        progress_cb=pbar.update)
+    card_functions.apply_classes_to_projects(selected_classes_names)
 
-    with card_widgets.select_classes_progress(message='applying classes to PRED',
-                                              total=f.get_project_items_count(g.gt_project_dir)) as pbar:
-        f.convert_project_to_semantic_segmentation_task(target_classes_names_list=selected_classes_names,
-                                                        src_project_dir=g.pred_project_dir,
-                                                        dst_project_dir=g.pred_project_dir_converted,
-                                                        progress_cb=pbar.update)
-
-    card_functions.calculate_base_metrics(gt_project_dir=g.gt_project_dir_converted,
-                                          pred_project_dir=g.pred_project_dir_converted)
+    card_functions.calculate_scores_tables(gt_project_dir=g.gt_project_dir_converted,
+                                           pred_project_dir=g.pred_project_dir_converted)
 
     # fill tables and matrix
 

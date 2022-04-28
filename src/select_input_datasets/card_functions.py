@@ -67,9 +67,9 @@ def collect_objects_information(objects_info, selected_datasets_names, gt_projec
         if collect_matched_images_names is True:
             images_names = f.get_matched_and_unmatched_images_names(gt_dataset_info=gt_dataset_info,
                                                                     pred_dataset_info=pred_dataset_info)
-            g.ds2matched[selected_ds_name] = images_names
+            g.ds2matched[selected_ds_name] = images_names['matched_images_names']
         else:
-            images_names = g.ds2matched[selected_ds_name]
+            images_names = {'matched_images_names': g.ds2matched[selected_ds_name]}
 
         for matched_image_name in images_names['matched_images_names']:
             gt_image_ann: supervisely.Annotation = gt_dataset_info.get_ann(matched_image_name, gt_project_meta)

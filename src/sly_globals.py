@@ -51,5 +51,31 @@ datasets_names_to_analyze = []
 bg_class_name = '__bg__'
 
 
+pixels_matches = {}
+
+"""
+structure: ds -> image -> 
+{
+    'class_1': {
+        'class_1': intersection: float, 
+        'class_2': intersection: float, 
+        ...
+        },
+        'class_2': {...}
+    },
+    ...   
+}
+"""
+
+iou_scores = {}
+
+"""
+structure: ds -> image -> 
+{
+    'class_1': iou: float,
+    'class_2': iou: float,
+    ...   
+}
+"""
 
 
