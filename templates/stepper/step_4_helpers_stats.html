@@ -1,13 +1,26 @@
 <sly-card title="Metrics Dashboard" subtitle="semantic segmentation metrics dashboard">
-    <div style="margin: 0 20px;
-    display: flex; flex-direction: row; align-items:center; justify-content: space-between;">
-        <div>
-            <h2>Pixel Accuracy: {{ data.pixel_accuracy }}</h2>
-            <h2>Mean IoU: {{ data.iou }}</h2>
+    <div style="margin: 0 20px; display: flex; flex-direction: row; align-items:center; justify-content: space-between;
+                padding-bottom:25px; border-bottom: 1px solid rgba(165,165,165,0.47)">
+
+        <div style="cursor: default;">
+            <div style="text-align: center; margin-bottom: 9px">
+                General Project Stats
+            </div>
+            <div style="border: 2px solid black; padding: 0 20px; border-radius: 10px;" :style="{borderColor: data.general_metrics.border_color}">
+                <h2><i class="zmdi zmdi-layers" style="margin-right: 10px" :style="{color: data.general_metrics.accuracy.color}"></i>
+                    Pixels Accuracy: {{ data.general_metrics.accuracy.value }}</h2>
+                <h2><i class="zmdi zmdi-delicious" style="margin-right: 10px" :style="{color: data.general_metrics.iou.color}"></i>
+                    Mean IoU: {{ data.general_metrics.iou.value }}</h2>
+            </div>
         </div>
+
         <div>
             {{{ open_iri_button.to_html() }}}
         </div>
+    </div>
+
+    <div style="padding: 25px 0">
+        {{{ matched_pixels_matrix.to_html() }}}
     </div>
 
 </sly-card>

@@ -6,7 +6,18 @@ from src.segmentation_metrics_dashboard.card_widgets import *
 
 StateJson()['showIRI'] = False
 
-DataJson()['pixel_accuracy'] = 0.6
-DataJson()['iou'] = 0.8
+DataJson()['general_metrics'] = {
+    'accuracy': {
+        'value': 0,
+        'color': 'black',
+    },
+    'iou': {
+        'value': 0,
+        'color': 'black',
+    },
+
+    'border_color': 'black'
+}
+
 
 
