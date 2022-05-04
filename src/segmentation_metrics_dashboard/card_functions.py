@@ -6,8 +6,20 @@ import pandas as pd
 import supervisely
 import src.sly_globals as g
 import src.sly_functions as f
-from src.segmentation_metrics_dashboard import card_widgets
+
 from supervisely.app import DataJson
+
+
+def get_pixel_accuracy_for_image(image_stats):
+    current_image_score = 0  # from 0 to 1
+
+    for current_class_name, current_class_matches in image_stats.items():
+        class_score = current_class_matches.get(current_class_name)
+
+        if class_score is not None:
+            current_image_score += class_score
+
+    return current_image_score
 
 
 def calculate_general_pixel_accuracy():
@@ -16,14 +28,7 @@ def calculate_general_pixel_accuracy():
     mean_between_images_accuracy = []
     for matched_images_in_dataset in g.pixels_matches.values():
         for current_image in matched_images_in_dataset.values():
-            current_image_score = 0  # from 0 to 1
-
-            for current_class_name, current_class_matches in current_image.items():
-                class_score = current_class_matches.get(current_class_name)
-
-                if class_score is not None:
-                    current_image_score += class_score
-
+            current_image_score = get_pixel_accuracy_for_image(image_stats=current_image)
             mean_between_images_accuracy.append(current_image_score)
 
     return sum(mean_between_images_accuracy) / len(mean_between_images_accuracy)  # mean by project
@@ -187,8 +192,10 @@ def get_stats_tables_content():
             stats_by_datasets[ds_name]['mean iou'] = sum(classname2score.values()) / len(classname2score.values())
 
     # collecting images nums
-    update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets, flag='gt images num')
-    update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets, flag='pred images num')
+    update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets,
+                                         flag='gt images num')
+    update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets,
+                                         flag='pred images num')
 
     # scores lists to values
     for class_name in stats_by_class_names.keys():
@@ -222,4 +229,53 @@ def get_stats_tables_content():
             'datasets': pd.DataFrame(data=stats_by_datasets_data, columns=stats_by_datasets_columns)}
 
 
+def get_images_table_content():
+    selected_classes_names = DataJson()['selected_classes_names']
+    table_content = []
 
+    gt_datasets = f.get_datasets_dict_by_project_dir(g.gt_project_dir)
+    pred_datasets = f.get_datasets_dict_by_project_dir(g.gt_project_dir)
+
+    for ds_name, matched_items_names in g.ds2matched.items():
+        gt_dataset: supervisely.Dataset = gt_datasets[ds_name]
+        pred_dataset: supervisely.Dataset = pred_datasets[ds_name]
+
+        for item_name in matched_items_names:
+            pixels_matches = g.pixels_matches.get(ds_name, {}).get(item_name)
+            if pixels_matches is not None:
+                accuracy = get_pixel_accuracy_for_image(image_stats=pixels_matches)
+            else:
+                accuracy = '-'
+
+            iou_scores = g.iou_scores.get(ds_name, {}).get(item_name)
+            scores_per_class = {class_name: '-' for class_name in selected_classes_names}
+
+            if iou_scores is not None:
+                mean_iou = sum(list(iou_scores.values())) / len(iou_scores)
+                scores_per_class.update(iou_scores)
+            else:
+                mean_iou = '-'
+
+            gt_image_url = g.api.image.url(team_id=g.TEAM_ID,
+                                           workspace_id=g.gt_project['workspace_id'],
+                                           project_id=g.gt_project['project_id'],
+                                           dataset_id=g.gt_ds2info[ds_name].id,
+                                           image_id=gt_dataset.get_image_info(item_name).id)
+
+            pred_image_url = g.api.image.url(team_id=g.TEAM_ID,
+                                             workspace_id=g.pred_project['workspace_id'],
+                                             project_id=g.pred_project['project_id'],
+                                             dataset_id=g.pred_ds2info[ds_name].id,
+                                             image_id=pred_dataset.get_image_info(item_name).id)
+
+            table_content.append({
+                'ds name': ds_name,
+                'gt image': gt_image_url,
+                'pred image': pred_image_url,
+                'accuracy': accuracy,
+                'mean IoU': mean_iou,
+                **iou_scores
+            })
+
+    # table_content.update(iou_by_classes)
+    return table_content

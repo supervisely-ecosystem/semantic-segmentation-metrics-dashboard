@@ -223,3 +223,9 @@ def get_classes_table_content(selected_datasets_names):
 ######################################
 # @TODO: move to ClassesCompare widget
 ######################################
+
+
+def cache_datasets_infos(selected_datasets_names):
+    for selected_dataset_name in selected_datasets_names:
+        g.gt_ds2info[selected_dataset_name] = g.api.dataset.get_info_by_name(parent_id=g.gt_project['project_id'], name=selected_dataset_name)
+        g.pred_ds2info[selected_dataset_name] = g.api.dataset.get_info_by_name(parent_id=g.pred_project['project_id'], name=selected_dataset_name)

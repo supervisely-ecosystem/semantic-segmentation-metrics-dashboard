@@ -33,6 +33,7 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
     run_sync(DataJson().synchronize_changes())
 
     DataJson()['classes_table_content'] = card_functions.get_classes_table_content(selected_datasets_names)
+    card_functions.cache_datasets_infos(selected_datasets_names)
 
     card_widgets.select_datasets_button.loading = False
     card_widgets.select_datasets_button.disabled = True

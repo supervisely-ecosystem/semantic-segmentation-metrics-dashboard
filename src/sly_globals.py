@@ -38,6 +38,15 @@ templates_env = Jinja2Templates(directory=os.path.join(app_root_directory, 'temp
 DataJson()['current_step'] = 1
 
 
+gt_project = {
+    'workspace_id': 0,
+    'project_id': 0
+}
+pred_project = {
+    'workspace_id': 0,
+    'project_id': 0
+}
+
 gt_project_dir = os.path.join(app_root_directory, 'tempfiles', 'gt_project_dir')
 pred_project_dir = os.path.join(app_root_directory, 'tempfiles', 'pred_project_dir')
 
@@ -45,6 +54,8 @@ gt_project_dir_converted = os.path.join(app_root_directory, 'tempfiles', 'gt_pro
 pred_project_dir_converted = os.path.join(app_root_directory, 'tempfiles', 'pred_project_dir_converted')
 
 ds2matched = {}
+gt_ds2info = {}
+pred_ds2info = {}
 
 datasets_names_to_analyze = []
 
@@ -77,5 +88,21 @@ structure: ds -> image ->
     ...   
 }
 """
+
+images_table_content = None
+
+"""
+table structure:
+{
+    'ds name': [],
+    'gt image': [],
+    'pred image': [],
+    'pixels accuracy': [],
+    'mean iou': [],
+    'matched classes': [],
+    **iou_by_classes
+}
+"""
+
 
 

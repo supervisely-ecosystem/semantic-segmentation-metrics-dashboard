@@ -51,6 +51,12 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
             gt_project_dir=g.gt_project_dir,
             pred_project_dir=g.pred_project_dir)
 
+        g.gt_project['workspace_id'] = card_widgets.gt_project_selector.get_selected_workspace_id(state)
+        g.gt_project['project_id'] = card_widgets.gt_project_selector.get_selected_project_id(state)
+
+        g.pred_project['workspace_id'] = card_widgets.pred_project_selector.get_selected_workspace_id(state)
+        g.pred_project['project_id'] = card_widgets.pred_project_selector.get_selected_project_id(state)
+
         card_widgets.download_projects_button.disabled = True
         DataJson()['current_step'] += 1
     except Exception as ex:

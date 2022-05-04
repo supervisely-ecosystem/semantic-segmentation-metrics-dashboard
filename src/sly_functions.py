@@ -139,3 +139,8 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
                     db_iou_scores[gt_class_name] = iou
 
 
+def get_image_link_by_item_name(workspace_id, project_id, ds_id, item_name):
+    # datasets_dict = get_datasets_dict_by_project_dir(project_dir)
+
+
+    return
