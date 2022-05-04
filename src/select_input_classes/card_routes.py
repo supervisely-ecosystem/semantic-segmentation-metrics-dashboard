@@ -12,6 +12,7 @@ import src.select_input_classes.card_widgets as card_widgets
 import src.select_input_classes.card_functions as card_functions
 
 import src.segmentation_metrics_dashboard.card_functions as seg_functions
+import src.segmentation_metrics_dashboard.card_widgets as seg_widgets
 
 
 @card_widgets.select_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
@@ -37,7 +38,9 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     seg_functions.colorize_metrics()
 
     # fill matrix and tables
-    seg_functions.get_matches_pixels_matrix_content()
+    seg_widgets.matched_pixels_matrix.data = seg_functions.get_matches_pixels_matrix_content()  # matches matrix
+    seg_widgets.stats_by_classes_table.data = seg_functions.get_stats_by_classes_table_content() # stats# stats by classes
+    seg_widgets.matched_pixels_matrix.data = seg_functions.get_matches_pixels_matrix_content()  # stats by ds
 
     # state['showIRI'] = True
 

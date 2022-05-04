@@ -1,3 +1,10 @@
 .example-style {
     color: white;
 }
+
+
+.pretty-hr {
+    border: 0;
+    border-bottom: 2px dashed #e9e9e9;
+    background: #fdfdfd;
+}
