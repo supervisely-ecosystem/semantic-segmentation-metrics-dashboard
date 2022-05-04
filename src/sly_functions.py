@@ -18,6 +18,24 @@ def get_datasets_dict_by_project_dir(directory):
     return {key: value for key, value in zip(project.datasets.keys(), project.datasets.items())}
 
 
+def get_project_items_count_by_class_names(directory):
+    project_meta = supervisely.Project(directory=directory, mode=supervisely.OpenMode.READ).meta
+    datasets_dict = get_datasets_dict_by_project_dir(directory)
+
+    ds2counter = {ds: {} for ds in datasets_dict.keys()}
+
+    dataset: supervisely.Dataset
+    for dataset in datasets_dict.values():
+
+        items_names = dataset.get_items_names()
+        for item_name in items_names:
+            ann = dataset.get_ann(item_name, project_meta)
+            for label in ann.labels:
+                ds2counter[dataset.name][label.obj_class.name] = ds2counter[dataset.name].get(label.obj_class.name, 0) + 1
+
+    return ds2counter
+
+
 def get_matched_and_unmatched_images_names(gt_dataset_info, pred_dataset_info):
     gt_items_names, pred_items_names = set(gt_dataset_info.get_items_names()), \
                                        set(pred_dataset_info.get_items_names())

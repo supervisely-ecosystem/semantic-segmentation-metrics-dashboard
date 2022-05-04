@@ -5,6 +5,7 @@ import pandas as pd
 
 import supervisely
 import src.sly_globals as g
+import src.sly_functions as f
 from src.segmentation_metrics_dashboard import card_widgets
 from supervisely.app import DataJson
 
@@ -71,13 +72,13 @@ def get_matches_pixels_matrix_content():
             data.append(get_matched_pixels_matrix_for_image(current_image, classes_names))
 
     filtered_data = [[] for _ in classes_names]
-    for matrix_for_image in data:                        # filter unexciting classes
+    for matrix_for_image in data:  # filter unexciting classes
         for class_name_index, row in enumerate(matrix_for_image):
             if len(row) > 0:
                 filtered_data[class_name_index].append(row)
 
     existing_class_names = []
-    existing_class_matrix = []                           # calculate mean values by existing rows
+    existing_class_matrix = []  # calculate mean values by existing rows
 
     columns_indexes_to_remove = []
     for class_name_index, class_name_data in enumerate(filtered_data):
@@ -111,14 +112,114 @@ def colorize_metrics():
     DataJson()['general_metrics']['border_color'] = get_metric_color((acc_score + iou_score) / 2)
 
 
-def get_stats_by_classes_table_content():
+def update_class_items_stats_for_project(project_dir, stats_by_class_names, stats_by_datasets, flag):
+    project_items_counts = f.get_project_items_count_by_class_names(project_dir)
+
+    for ds_name, ds_counts in project_items_counts.items():
+        for class_name, class_counts in ds_counts.items():
+            class_stats = stats_by_class_names.get(class_name)
+            if class_stats is not None:
+                class_stats[flag] += class_counts
+
+
+def get_stats_tables_content():
     classes_names = DataJson()['selected_classes_names']
 
-    stats_by_class_names = {}
-    stats_by_datasets = {}
+    stats_by_class_names = {class_name: {
+        'accuracy': [],
+        'mean iou': [],
+        'gt images num': 0,
+        'pred images num': 0,
+        'matched': 0
+    } for class_name in classes_names}
 
+    stats_by_datasets = {ds_name: {
+        'accuracy': '-',
+        'mean iou': '-',
+        'matched': 0
+    } for ds_name in g.pixels_matches.keys()}
+
+    # collecting accuracy
     for ds_name, matched_images_in_dataset in g.pixels_matches.items():
-        stats_by_datasets.setdefault(ds_name, {})
 
+        # per classes
+        matched_pixels_by_classes_in_dataset = {class_name: [] for class_name in classes_names}
         for current_image in matched_images_in_dataset.values():
-            matches_per_images = get_matched_pixels_matrix_for_image(current_image, classes_names)
+            matches_matrix = get_matched_pixels_matrix_for_image(current_image, classes_names)
+            for class_name_index, row in enumerate(matches_matrix):
+                if len(row) > 0:
+                    match_score_on_image = row[class_name_index]
+                    current_class_stats = matched_pixels_by_classes_in_dataset[classes_names[class_name_index]]
+                    current_class_stats.append(match_score_on_image)
+
+                    if match_score_on_image > 0:
+                        stats_by_class_names[classes_names[class_name_index]]['matched'] += 1
+
+        classname2matched = {class_name: sum(scores_list) / len(scores_list) for class_name, scores_list in
+                             matched_pixels_by_classes_in_dataset.items() if len(scores_list) > 0}
+
+        for class_name, class_score in classname2matched.items():
+            stats_by_class_names[class_name]['accuracy'].append(class_score)
+
+        # per datasets
+        if len(classname2matched.values()) > 0:
+            stats_by_datasets[ds_name]['accuracy'] = sum(classname2matched.values()) / len(classname2matched.values())
+            stats_by_datasets[ds_name]['matched'] = len(matched_images_in_dataset)
+
+    # collecting iou
+    for ds_name, scores_by_images_in_dataset in g.iou_scores.items():
+
+        # per classes
+        scores_by_classes_in_dataset = {class_name: [] for class_name in classes_names}
+
+        for current_image in scores_by_images_in_dataset.values():
+            for class_name_on_image, class_score in current_image.items():
+                scores_by_classes_in_dataset[class_name_on_image].append(class_score)
+
+        classname2score = {class_name: sum(scores_list) / len(scores_list) for class_name, scores_list in
+                           scores_by_classes_in_dataset.items() if len(scores_list) > 0}
+
+        for class_name, class_score in classname2score.items():
+            stats_by_class_names[class_name]['mean iou'].append(class_score)
+
+        # per datasets
+        if len(classname2score.values()) > 0:
+            stats_by_datasets[ds_name]['mean iou'] = sum(classname2score.values()) / len(classname2score.values())
+
+    # collecting images nums
+    update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets, flag='gt images num')
+    update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets, flag='pred images num')
+
+    # scores lists to values
+    for class_name in stats_by_class_names.keys():
+        for score_key in ['accuracy', 'mean iou']:
+            if len(stats_by_class_names[class_name][score_key]) > 0:
+                stats_by_class_names[class_name][score_key] = \
+                    sum(stats_by_class_names[class_name][score_key]) / len(stats_by_class_names[class_name][score_key])
+            else:
+                stats_by_class_names[class_name][score_key] = '-'
+
+    # format tables
+    stats_by_class_name_columns = ['class_name']  # classes stats table
+    stats_by_class_name_columns.extend(list(stats_by_class_names[classes_names[0]].keys()))
+
+    stats_by_class_name_data = []
+    for class_name, class_stats in stats_by_class_names.items():
+        row = [class_name]
+        row.extend(list(class_stats.values()))
+        stats_by_class_name_data.append(row)
+
+    stats_by_datasets_columns = ['ds_name']  # ds stats table
+    stats_by_datasets_columns.extend(list(list(stats_by_datasets.values())[0].keys()))
+
+    stats_by_datasets_data = []
+    for ds_name, ds_stats in stats_by_datasets.items():
+        row = [ds_name]
+        row.extend(list(ds_stats.values()))
+        stats_by_datasets_data.append(row)
+
+    return {'classes': pd.DataFrame(data=stats_by_class_name_data, columns=stats_by_class_name_columns),
+            'datasets': pd.DataFrame(data=stats_by_datasets_data, columns=stats_by_datasets_columns)}
+
+
+

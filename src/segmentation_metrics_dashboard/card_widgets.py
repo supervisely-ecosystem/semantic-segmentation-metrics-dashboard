@@ -4,6 +4,7 @@ open_iri_button = ElementButton(text='Open Images Review Interface', button_type
 matched_pixels_matrix = ConfusionMatrix()
 
 stats_by_classes_table = ClassicTable()
+stats_by_datasets_table = ClassicTable()
 
 
 

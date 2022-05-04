@@ -39,8 +39,12 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
 
     # fill matrix and tables
     seg_widgets.matched_pixels_matrix.data = seg_functions.get_matches_pixels_matrix_content()  # matches matrix
-    seg_widgets.stats_by_classes_table.data = seg_functions.get_stats_by_classes_table_content() # stats# stats by classes
-    seg_widgets.matched_pixels_matrix.data = seg_functions.get_matches_pixels_matrix_content()  # stats by ds
+
+    stats_tables_content = seg_functions.get_stats_tables_content()
+    seg_widgets.stats_by_classes_table.data = stats_tables_content['classes']  # stats by classes
+    seg_widgets.stats_by_datasets_table.data = stats_tables_content['datasets']  # stats by classes
+    # seg_widgets.matched_pixels_matrix.data = seg_functions.get_matches_pixels_matrix_content()  # stats by ds
+
 
     # state['showIRI'] = True
 
