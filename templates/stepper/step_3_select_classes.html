@@ -23,14 +23,14 @@
                 </div>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="left.area" :label="`Pixels`" align="center">
+        <el-table-column sortable prop="left.area" :label="`Pixels`" align="center" width="95px">
             <template scope="scope">
                 <span>
                     {{scope.row.left.area}} %
                 </span>
             </template>
         </el-table-column>
-        <el-table-column label="Comparison Result" width="300" align="center" >
+        <el-table-column label="Comparison Result"  align="center" >
             <template scope="scope">
                 <div v-for="(count, index) in scope.row.statuses.numbers">
                     <div v-if="count !== 0">
@@ -46,7 +46,7 @@
                 </div>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="right.area" :label="`Pixels`" align="center">
+        <el-table-column sortable prop="right.area" :label="`Pixels`" align="center" width="95px">
             <template scope="scope" style="text-align: center">
                 <span >
                     {{scope.row.right.area}} %

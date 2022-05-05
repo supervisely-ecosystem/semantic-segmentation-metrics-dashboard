@@ -42,7 +42,7 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
                                                             progress_cb=pbar.update)
 
         with card_widgets.download_projects_progress(message='converting PRED project',
-                                                     total=f.get_project_items_count(g.gt_project_dir)) as pbar:
+                                                     total=f.get_project_items_count(g.pred_project_dir)) as pbar:
             f.convert_project_to_semantic_segmentation_task(src_project_dir=g.pred_project_dir,
                                                             dst_project_dir=g.pred_project_dir_converted,
                                                             progress_cb=pbar.update)

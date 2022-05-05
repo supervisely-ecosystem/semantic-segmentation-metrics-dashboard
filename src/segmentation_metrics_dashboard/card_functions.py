@@ -1,5 +1,7 @@
 import colorsys
+import copy
 
+from supervisely.app import DataJson
 import numpy as np
 import pandas as pd
 
@@ -7,7 +9,7 @@ import supervisely
 import src.sly_globals as g
 import src.sly_functions as f
 
-from supervisely.app import DataJson
+import src.segmentation_metrics_dashboard.card_widgets as card_widgets
 
 
 def get_pixel_accuracy_for_image(image_stats):
@@ -19,7 +21,7 @@ def get_pixel_accuracy_for_image(image_stats):
         if class_score is not None:
             current_image_score += class_score
 
-    return current_image_score
+    return round(current_image_score, 3)
 
 
 def calculate_general_pixel_accuracy():
@@ -60,7 +62,7 @@ def get_matched_pixels_matrix_for_image(current_image, classes_names):
                 row[match_name] += match_score
 
             sum_of_row = sum(list(row.values()))
-            row = [row[class_name] / sum_of_row for class_name in classes_names]
+            row = [round((row[class_name] / sum_of_row), 3) for class_name in classes_names]
             data[row_index] = row
         else:
             data[row_index] = []
@@ -98,7 +100,7 @@ def get_matches_pixels_matrix_content():
 
     # data = np.sum(data, axis=0) / len(data)
 
-    return pd.DataFrame(data=existing_class_matrix, columns=existing_class_names)
+    return pd.DataFrame(data=existing_class_matrix.round(3), columns=existing_class_names)
 
 
 def get_metric_color(metric_value):
@@ -243,7 +245,7 @@ def get_images_table_content():
         for item_name in matched_items_names:
             pixels_matches = g.pixels_matches.get(ds_name, {}).get(item_name)
             if pixels_matches is not None:
-                accuracy = get_pixel_accuracy_for_image(image_stats=pixels_matches)
+                accuracy = round(get_pixel_accuracy_for_image(image_stats=pixels_matches), 3)
             else:
                 accuracy = '-'
 
@@ -251,10 +253,13 @@ def get_images_table_content():
             scores_per_class = {class_name: '-' for class_name in selected_classes_names}
 
             if iou_scores is not None:
-                mean_iou = sum(list(iou_scores.values())) / len(iou_scores)
+                mean_iou = round(sum(list(iou_scores.values())) / len(iou_scores), 3)
                 scores_per_class.update(iou_scores)
             else:
                 mean_iou = '-'
+
+            for class_name in selected_classes_names:
+                scores_per_class[f'{class_name} IoU'] = scores_per_class.pop(class_name)
 
             gt_image_url = g.api.image.url(team_id=g.TEAM_ID,
                                            workspace_id=g.gt_project['workspace_id'],
@@ -270,12 +275,125 @@ def get_images_table_content():
 
             table_content.append({
                 'ds name': ds_name,
-                'gt image': gt_image_url,
-                'pred image': pred_image_url,
+                'item name': item_name,
+                'gt image': f'<a href="{gt_image_url}" rel="noopener noreferrer" target="_blank">open <i class="zmdi zmdi-open-in-new" style="margin-left: 5px"></i></a>',
+                'pred image': f'<a href="{pred_image_url}" rel="noopener noreferrer" target="_blank">open <i class="zmdi zmdi-open-in-new" style="margin-left: 5px"`></i></a>',
                 'accuracy': accuracy,
                 'mean IoU': mean_iou,
-                **iou_scores
+                **scores_per_class
             })
 
     # table_content.update(iou_by_classes)
     return table_content
+
+
+
+def get_matrix_for_image_content(state):
+    selected_classes_names = DataJson()['selected_classes_names']
+    selected_cell = card_widgets.images_table.get_selected_cell(state)
+
+    ds_name = selected_cell['row_data']['ds name']
+    item_name = selected_cell['row_data']['item name']
+
+    item_info = g.pixels_matches[ds_name][item_name]
+
+    matrix_for_image = get_matched_pixels_matrix_for_image(current_image=item_info, classes_names=selected_classes_names)
+
+    columns_indexes_to_remove = []
+    for class_name_index, class_name_data in enumerate(matrix_for_image):
+        if len(class_name_data) == 0:
+            columns_indexes_to_remove.append(class_name_index)
+
+    matrix_for_image = np.asarray(matrix_for_image)
+    matrix_for_image = np.delete(matrix_for_image, columns_indexes_to_remove, axis=1)
+    selected_classes_names = np.delete(selected_classes_names, columns_indexes_to_remove, axis=0)
+
+    return pd.DataFrame(data=matrix_for_image, columns=selected_classes_names)
+
+
+def get_matches_annotation(gt_ann: supervisely.Annotation, pred_ann: supervisely.Annotation, selected_classes=None):
+    gt_mask, gt_name2color = f.get_mask_with_colors_mapping(gt_ann)
+    pred_mask, pred_name2color = f.get_mask_with_colors_mapping(pred_ann)
+
+    gt_mask, pred_mask = np.asarray(gt_mask), np.asarray(pred_mask)
+
+    if selected_classes is None:
+        selected_classes = DataJson()['selected_classes_names']
+
+    matched_pixels = np.zeros(shape=gt_ann.img_size)
+    unmatched_pixels = np.zeros(shape=gt_ann.img_size)
+    for selected_class in selected_classes:
+        gt_color = gt_name2color.get(selected_class)
+        pred_color = pred_name2color.get(selected_class)
+
+        if gt_color is not None and pred_color is None:
+            gt_unmatched = (gt_mask == gt_color).all(-1)
+            unmatched_pixels = np.logical_or(gt_unmatched, unmatched_pixels)
+        elif gt_color is None and pred_color is not None:
+            pred_unmatched = (pred_mask == pred_color).all(-1)
+            unmatched_pixels = np.logical_or(pred_unmatched, unmatched_pixels)
+
+        elif gt_color is not None and pred_color is not None:
+            gt_pixels_of_interest = (gt_mask == gt_color).all(-1)
+            pred_pixels_of_interest = (pred_mask == pred_color).all(-1)
+
+            matched_pixels_for_class = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
+            unmatched_pixels_for_class = np.logical_xor(gt_pixels_of_interest, pred_pixels_of_interest)
+
+            matched_pixels = np.logical_or(matched_pixels_for_class, matched_pixels)
+            unmatched_pixels = np.logical_or(unmatched_pixels_for_class, unmatched_pixels)
+
+
+    labels_list = []
+    if np.sum(matched_pixels) > 0:
+        matched_bitmap = supervisely.Bitmap(data=matched_pixels)
+        label_matched = supervisely.Label(matched_bitmap, supervisely.ObjClass('_matched_pixels', supervisely.Bitmap, color=[0, 255, 0]))
+        labels_list.append(label_matched)
+
+    if np.sum(unmatched_pixels) > 0:
+        unmatched_bitmap = supervisely.Bitmap(data=unmatched_pixels)
+        label_unmatched = supervisely.Label(unmatched_bitmap, supervisely.ObjClass('_unmatched_pixels', supervisely.Bitmap, color=[255, 0, 0]))
+        labels_list.append(label_unmatched)
+
+    return supervisely.Annotation(img_size=gt_ann.img_size, labels=labels_list)
+
+
+def refill_image_gallery(state, selected_classes=None):
+    selected_cell = card_widgets.images_table.get_selected_cell(state)
+
+    ds_name = selected_cell['row_data']['ds name']
+    item_name = selected_cell['row_data']['item name']
+
+    gt_image_url = f.get_image_link(project_dir=g.gt_project_dir, ds_name=ds_name, item_name=item_name)
+    gt_annotation = f.get_image_annotation(project_dir=g.gt_project_dir_converted, ds_name=ds_name, item_name=item_name)
+
+    pred_image_url = f.get_image_link(project_dir=g.pred_project_dir, ds_name=ds_name, item_name=item_name)
+    pred_annotation = f.get_image_annotation(project_dir=g.pred_project_dir_converted, ds_name=ds_name, item_name=item_name)
+
+    result_image_url = gt_image_url
+    result_annotation = get_matches_annotation(gt_ann=gt_annotation, pred_ann=pred_annotation, selected_classes=selected_classes)
+
+    if selected_classes is not None:
+        gt_annotation = f.filter_annotation_by_selected_classes(gt_annotation, selected_classes)
+        pred_annotation = f.filter_annotation_by_selected_classes(pred_annotation, selected_classes)
+
+    card_widgets.images_gallery.clean_up()
+
+    card_widgets.images_gallery.append(title='GT', image_url=gt_image_url, annotation=gt_annotation, column_index=0)
+    card_widgets.images_gallery.append(title='RESULTS: GREEN MATCHED / RED UNMATCHED', image_url=result_image_url, annotation=result_annotation, column_index=1)
+    card_widgets.images_gallery.append(title='PRED', image_url=pred_image_url, annotation=pred_annotation, column_index=2)
+
+
+def highlight_selected_class_on_images(state):
+    selected_cell = card_widgets.image_matrix.get_selected_cell(state)
+    cell_data = selected_cell['cell_data']
+
+    gt_selected_class = cell_data['row_name']
+    pred_selected_class = cell_data['col_name']
+
+    refill_image_gallery(state, selected_classes=[gt_selected_class, pred_selected_class])
+
+
+
+
+

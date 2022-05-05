@@ -1,5 +1,7 @@
 import time
 
+import numpy as np
+
 import supervisely
 import src.sly_globals as g
 import src.sly_functions as f
@@ -44,8 +46,11 @@ def apply_classes_to_projects(selected_classes_names):
                                                         progress_cb=pbar.update)
 
     with card_widgets.select_classes_progress(message='applying classes to PRED',
-                                              total=f.get_project_items_count(g.gt_project_dir)) as pbar:
+                                              total=f.get_project_items_count(g.pred_project_dir)) as pbar:
         f.convert_project_to_semantic_segmentation_task(target_classes_names_list=selected_classes_names,
                                                         src_project_dir=g.pred_project_dir,
                                                         dst_project_dir=g.pred_project_dir_converted,
                                                         progress_cb=pbar.update)
+
+
+

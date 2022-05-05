@@ -6,7 +6,7 @@ matched_pixels_matrix = ConfusionMatrix()
 stats_by_classes_table = ClassicTable()
 stats_by_datasets_table = ClassicTable()
 
-images_table = ClassicTable()
+images_table = ClassicTable(fixed_columns_num=6)
 images_gallery = GridGallery(columns_number=3)
 image_matrix = ConfusionMatrix()
 

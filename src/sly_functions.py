@@ -31,7 +31,8 @@ def get_project_items_count_by_class_names(directory):
         for item_name in items_names:
             ann = dataset.get_ann(item_name, project_meta)
             for label in ann.labels:
-                ds2counter[dataset.name][label.obj_class.name] = ds2counter[dataset.name].get(label.obj_class.name, 0) + 1
+                ds2counter[dataset.name][label.obj_class.name] = ds2counter[dataset.name].get(label.obj_class.name,
+                                                                                              0) + 1
 
     return ds2counter
 
@@ -64,7 +65,6 @@ def get_matched_and_unmatched_images_names(gt_dataset_info, pred_dataset_info):
 
 def convert_project_to_semantic_segmentation_task(src_project_dir, dst_project_dir=None,
                                                   target_classes_names_list=None, progress_cb=None):
-
     if dst_project_dir is not None and os.path.isdir(dst_project_dir):
         supervisely.fs.clean_dir(dst_project_dir)
 
@@ -74,7 +74,7 @@ def convert_project_to_semantic_segmentation_task(src_project_dir, dst_project_d
                                              progress_cb=progress_cb)
 
 
-def get_mask_with_color_mask(annotation):
+def get_mask_with_colors_mapping(annotation):
     # get mask with color mapping
     objname2color = {}
     mask = np.zeros([annotation.img_size[0], annotation.img_size[1], 3], dtype=np.uint8)
@@ -87,6 +87,15 @@ def get_mask_with_color_mask(annotation):
     return mask, objname2color
 
 
+def get_size_of_gt_mask_union(gt_mask, gt_color):
+    if gt_color is not None:
+        gt_interest = np.asarray(gt_mask == gt_color).all(-1)
+    else:
+        gt_interest = np.zeros(gt_mask.shape)
+
+    return np.sum(gt_interest)
+
+
 def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: supervisely.Annotation, ds_name, item_name):
     g.pixels_matches.setdefault(ds_name, {}).setdefault(item_name, {})
     g.iou_scores.setdefault(ds_name, {}).setdefault(item_name, {})
@@ -96,20 +105,23 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
 
     selected_classes_names = DataJson()['selected_classes_names']
 
-    gt_mask, gt_color_mapping = get_mask_with_color_mask(gt_ann)
-    pred_mask, pred_color_mapping = get_mask_with_color_mask(pred_ann)
+    gt_mask, gt_color_mapping = get_mask_with_colors_mapping(gt_ann)
+    pred_mask, pred_color_mapping = get_mask_with_colors_mapping(pred_ann)
 
     img_size = np.prod(gt_ann.img_size)
 
     for gt_class_name in selected_classes_names:
+        size_of_class_union = get_size_of_gt_mask_union(gt_mask, gt_color_mapping.get(gt_class_name))
+        if size_of_class_union == 0:  # class not exists on both pixels
+            continue
+
         db_pixels_matches.setdefault(gt_class_name, {})
 
         gt_color = gt_color_mapping.get(gt_class_name)
-
         for pred_class_name in selected_classes_names:
             pred_color = pred_color_mapping.get(pred_class_name)
 
-            if gt_color is None and pred_color is None:        # if object is absent on GT && PRED masks (both)
+            if gt_color is None and pred_color is None:  # if object is absent on GT && PRED masks (both)
                 continue
 
             elif gt_color is not None and pred_color is None:  # if object appears on GT mask only
@@ -124,23 +136,39 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
                     db_iou_scores[gt_class_name] = 0
                 continue
 
-            else:                                              # if object appears on GT && PRED mask (both)
-                gt_pixels_of_interest = gt_mask == gt_color_mapping[gt_class_name]
-                pred_pixels_of_interest = pred_mask == pred_color_mapping[pred_class_name]
+            else:  # if object appears on GT && PRED mask (both)
+                gt_pixels_of_interest = np.asarray(gt_mask == gt_color_mapping[gt_class_name]).all(-1)
+                pred_pixels_of_interest = np.asarray(pred_mask == pred_color_mapping[pred_class_name]).all(-1)
 
-                masks_intersection = np.sum(np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)) // 3
-                masks_union = np.sum(np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest)) // 3
+                masks_intersection = np.sum(np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest))
+                masks_union = np.sum(np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest))
 
-                intersection = masks_intersection / img_size
-                db_pixels_matches[gt_class_name][pred_class_name] = intersection
+                db_pixels_matches[gt_class_name][pred_class_name] = round(masks_intersection / size_of_class_union, 3)
 
                 if gt_class_name == pred_class_name:
                     iou = masks_intersection / masks_union
-                    db_iou_scores[gt_class_name] = iou
+                    db_iou_scores[gt_class_name] = round(iou, 3)
 
 
-def get_image_link_by_item_name(workspace_id, project_id, ds_id, item_name):
-    # datasets_dict = get_datasets_dict_by_project_dir(project_dir)
+def get_image_link(project_dir, ds_name, item_name):
+    datasets_dict = get_datasets_dict_by_project_dir(project_dir)
+    dataset: supervisely.Dataset = datasets_dict[ds_name]
+
+    return dataset.get_image_info(item_name).full_storage_url
 
 
-    return
+def get_image_annotation(project_dir, ds_name, item_name):
+    project_meta = supervisely.Project(directory=project_dir, mode=supervisely.OpenMode.READ).meta
+    datasets_dict = get_datasets_dict_by_project_dir(project_dir)
+    dataset: supervisely.Dataset = datasets_dict[ds_name]
+
+    return dataset.get_ann(item_name, project_meta)
+
+
+def filter_annotation_by_selected_classes(ann: supervisely.Annotation, selected_classes):
+    filtered_labels = []
+    for label in ann.labels:
+        if label.obj_class.name in selected_classes:
+            filtered_labels.append(label)
+
+    return ann.clone(labels=filtered_labels)

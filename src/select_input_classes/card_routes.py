@@ -9,11 +9,12 @@ from supervisely.app.widgets import ElementButton
 import src.sly_globals as g
 import src.sly_functions as f
 
-import src.select_input_classes.card_widgets as card_widgets
-import src.select_input_classes.card_functions as card_functions
-
 import src.segmentation_metrics_dashboard.card_functions as seg_functions
 import src.segmentation_metrics_dashboard.card_widgets as seg_widgets
+
+
+import src.select_input_classes.card_widgets as card_widgets
+import src.select_input_classes.card_functions as card_functions
 
 
 @card_widgets.select_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
@@ -34,8 +35,8 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     card_functions.calculate_scores_tables(gt_project_dir=g.gt_project_dir_converted,
                                            pred_project_dir=g.pred_project_dir_converted)
 
-    DataJson()['general_metrics']['accuracy']['value'] = seg_functions.calculate_general_pixel_accuracy()
-    DataJson()['general_metrics']['iou']['value'] = seg_functions.calculate_general_mean_iou()
+    DataJson()['general_metrics']['accuracy']['value'] = round(seg_functions.calculate_general_pixel_accuracy(), 3)
+    DataJson()['general_metrics']['iou']['value'] = round(seg_functions.calculate_general_mean_iou(), 3)
     seg_functions.colorize_metrics()
 
     # fill matrix and tables
