@@ -167,7 +167,6 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
 
 
 
-
 def get_image_link(project_dir, ds_name, item_name):
     datasets_dict = get_datasets_dict_by_project_dir(project_dir)
     dataset: supervisely.Dataset = datasets_dict[ds_name]

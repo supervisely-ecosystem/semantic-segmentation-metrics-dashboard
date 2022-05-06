@@ -1,54 +1,66 @@
-<sly-card title="Metrics Dashboard" subtitle="semantic segmentation metrics dashboard">
-    <div style="margin: 0 20px; display: flex; flex-direction: row; align-items:center; justify-content: space-between;
+<sly-card title="Metrics Dashboard" subtitle="semantic segmentation metrics dashboard"
+          :disabled="{disabled: data.current_step < 4, message: 'complete previous step to unlock'}">
+    <div slot="header">
+        <div>
+            {{{ toggle_iri_button.to_html() }}}
+        </div>
+    </div>
+    <transition name="el-fade-in">
+
+
+        <div v-show="!state.showIRI" class="transition-box">
+            <div style="margin: 0 20px; display: flex; flex-direction: row; align-items:center; justify-content: space-between;
                 padding-bottom:25px">
 
-        <div style="cursor: default;">
-            <div style="text-align: center; margin-bottom: 9px; margin-top: 4px">
-                General Project Stats
+                <div style="cursor: default;">
+                    <div style="text-align: center; margin-bottom: 9px; margin-top: 4px">
+                        General Project Stats
+                    </div>
+                    <div style="border: 2px solid black; padding: 0 20px; border-radius: 10px;"
+                         :style="{borderColor: data.general_metrics.border_color}">
+                        <h2><i class="zmdi zmdi-layers" style="margin-right: 10px"
+                               :style="{color: data.general_metrics.accuracy.color}"></i>
+                            Pixels Accuracy: {{ data.general_metrics.accuracy.value }}</h2>
+                        <h2><i class="zmdi zmdi-delicious" style="margin-right: 10px"
+                               :style="{color: data.general_metrics.iou.color}"></i>
+                            Mean IoU: {{ data.general_metrics.iou.value }}</h2>
+                    </div>
+                </div>
+
+
             </div>
-            <div style="border: 2px solid black; padding: 0 20px; border-radius: 10px;"
-                 :style="{borderColor: data.general_metrics.border_color}">
-                <h2><i class="zmdi zmdi-layers" style="margin-right: 10px"
-                       :style="{color: data.general_metrics.accuracy.color}"></i>
-                    Pixels Accuracy: {{ data.general_metrics.accuracy.value }}</h2>
-                <h2><i class="zmdi zmdi-delicious" style="margin-right: 10px"
-                       :style="{color: data.general_metrics.iou.color}"></i>
-                    Mean IoU: {{ data.general_metrics.iou.value }}</h2>
+
+            <hr class="pretty-hr"/>
+
+            <div style="padding: 25px 0">
+                <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
+                    Matched Pixels Matrix
+                </div>
+                {{{ matched_pixels_matrix.to_html() }}}
+            </div>
+
+            <hr class="pretty-hr"/>
+
+            <div style="display: flex; flex-direction: row; justify-content: space-between">
+                <div style="margin: 25px 10px">
+                    <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
+                        Statistics by Classes
+                    </div>
+                    {{{ stats_by_classes_table.to_html() }}}
+                </div>
+                <div style="margin: 25px 10px">
+                    <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
+                        Statistics by Datasets
+                    </div>
+                    {{{ stats_by_datasets_table.to_html() }}}
+                </div>
             </div>
         </div>
-
-        <div>
-            {{{ open_iri_button.to_html() }}}
+    </transition>
+    <transition name="el-fade-in">
+        <div v-show="state.showIRI" class="transition-box">
+            {% include 'images_review_interface.html' %}
         </div>
-    </div>
-
-    <hr class="pretty-hr"/>
-
-    <div style="padding: 25px 0">
-        <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
-            Matched Pixels Matrix
-        </div>
-        {{{ matched_pixels_matrix.to_html() }}}
-    </div>
-
-    <hr class="pretty-hr"/>
-
-    <div style="display: flex; flex-direction: row; justify-content: space-between">
-        <div style="margin: 25px 10px">
-            <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
-                Statistics by Classes
-            </div>
-            {{{ stats_by_classes_table.to_html() }}}
-        </div>
-        <div style="margin: 25px 10px">
-            <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
-                Statistics by Datasets
-            </div>
-            {{{ stats_by_datasets_table.to_html() }}}
-        </div>
-    </div>
-
-    <hr class="pretty-hr"/>
-
-
+    </transition>
 </sly-card>
+

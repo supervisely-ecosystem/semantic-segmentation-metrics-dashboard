@@ -57,6 +57,8 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     card_widgets.classes_done_label.text = f'metrics successfully calculated'
     card_widgets.select_classes_button.loading = False
     card_widgets.select_classes_button.disabled = True
+    seg_widgets.toggle_iri_button.disabled = False
+
     DataJson()['current_step'] += 1
 
     run_sync(StateJson().synchronize_changes())

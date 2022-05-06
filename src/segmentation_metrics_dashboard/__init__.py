@@ -5,6 +5,7 @@ from src.segmentation_metrics_dashboard.card_functions import *
 from src.segmentation_metrics_dashboard.card_widgets import *
 
 StateJson()['showIRI'] = False
+DataJson()['image_to_analyze_selected'] = False
 
 DataJson()['general_metrics'] = {
     'accuracy': {

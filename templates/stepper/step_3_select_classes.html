@@ -1,4 +1,5 @@
-<sly-card title="Select Classes" subtitle="select classes to calculate metrics on">
+<sly-card title="Select Classes" subtitle="select classes to calculate metrics on"
+          :disabled="{disabled: data.current_step < 3, message: 'complete previous step to unlock'}">
 
 
     <el-table class="ultra-table"
@@ -30,7 +31,7 @@
                 </span>
             </template>
         </el-table-column>
-        <el-table-column label="Comparison Result"  align="center" >
+        <el-table-column label="Comparison Result" align="center">
             <template scope="scope">
                 <div v-for="(count, index) in scope.row.statuses.numbers">
                     <div v-if="count !== 0">
@@ -39,7 +40,8 @@
                                     <i v-for="icon in scope.row.statuses.icons[index]" :class="icon"></i>
                                 </span>
                             <span>
-                                    {{scope.row.statuses.messages[index]}} <span v-if="count > 0">({{count}} images)</span>
+                                    {{scope.row.statuses.messages[index]}} <span
+                                    v-if="count > 0">({{count}} images)</span>
                                 </span>
                         </div>
                     </div>
@@ -48,12 +50,12 @@
         </el-table-column>
         <el-table-column sortable prop="right.area" :label="`Pixels`" align="center" width="95px">
             <template scope="scope" style="text-align: center">
-                <span >
+                <span>
                     {{scope.row.right.area}} %
                 </span>
             </template>
         </el-table-column>
-        <el-table-column sortable prop="right.name" :label="`PRED Classes`" width="380px"  align="right">
+        <el-table-column sortable prop="right.name" :label="`PRED Classes`" width="380px" align="right">
             <template scope="scope">
                 <div v-if="scope.row.right.name.length > 0">
                     <i class="zmdi zmdi-circle" :style="{color: scope.row.right.color}"></i>

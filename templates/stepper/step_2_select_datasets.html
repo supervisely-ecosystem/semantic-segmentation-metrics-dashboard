@@ -1,4 +1,6 @@
-<sly-card title="Select Datasets" subtitle="select datasets to calculate metrics on">
+<sly-card title="Select Datasets" subtitle="select datasets to calculate metrics on"
+          :disabled="{disabled: data.current_step < 2, message: 'complete previous step to unlock'}"
+>
     <div slot="header">
         <div style="margin-bottom: 5px; text-align: right">
             <div class="">
@@ -22,7 +24,7 @@
 
     <el-table class="ultra-table"
               :data="data.datasets_table_content"
-              :disabled="data.current_step > 2"
+
               style="width: 100%"
               :default-sort="{prop: 'left.name', order: 'ascending'}"
               @selection-change="
@@ -30,9 +32,8 @@
                     state.selectedDatasets = val.map(x => x.left.name);
                     post('/apply_changes/');
                 }
-                "
-    >
-        <el-table-column type="selection" :disabled="data.current_step > 2" width="55"></el-table-column>
+                ">
+        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column sortable prop="left.name" :label="`GT Datasets`">
             <template scope="scope">
                 <div v-if="scope.row.left.name.length > 0">

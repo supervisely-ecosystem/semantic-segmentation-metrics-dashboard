@@ -1,18 +1,16 @@
-<el-dialog title="Images Review Interface" subtitle="click on table row and review selected image"
-           :visible.sync="state.showIRI" @close="state.showIRI=false; post('/apply_changes/')"
 
-           size="large"
-           top="0"
-    >
+<!--<el-dialog-->
 
-    <div>
-        <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
-            Images Table
-        </div>
-        {{{ images_table.to_html() }}}
-    </div>
-    <hr class="pretty-hr" style="margin: 25px 0"/>
-    <div>
+<!--        title="Images Review Interface" subtitle="click on table row and review selected image"-->
+<!--           :visible.sync="state.showIRI" @close="state.showIRI=false; post('/apply_changes/')"-->
+
+<!--           size="large"-->
+
+<!--&gt;-->
+<div>
+
+    <div v-if="data.image_to_analyze_selected">
+
 
         <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
             Visualization Results
@@ -21,8 +19,21 @@
             </span>
         </div>
         {{{ images_gallery.to_html() }}}
-        <div  style="margin: 25px 0"></div>
+        <div style="margin: 25px 0"></div>
         {{{ image_matrix.to_html() }}}
     </div>
+    <div v-else>
+        {{{ notification_box_inside_iri.to_html() }}}
+    </div>
 
-</el-dialog>
+    <hr class="pretty-hr" style="margin: 25px 0"/>
+    <div>
+        <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
+            Images Table
+        </div>
+        {{{ images_table.to_html() }}}
+    </div>
+
+</div>
+
+<!--</el-dialog>-->
