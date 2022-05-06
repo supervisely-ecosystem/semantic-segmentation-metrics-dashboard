@@ -58,6 +58,8 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
         g.pred_project['project_id'] = card_widgets.pred_project_selector.get_selected_project_id(state)
 
         card_widgets.download_projects_button.disabled = True
+        card_widgets.projects_downloaded_done_label.text = 'projects downloaded'
+
         DataJson()['current_step'] += 1
     except Exception as ex:
         card_widgets.pred_project_selector.disabled = False

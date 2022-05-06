@@ -35,9 +35,12 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
     DataJson()['classes_table_content'] = card_functions.get_classes_table_content(selected_datasets_names)
     card_functions.cache_datasets_infos(selected_datasets_names)
 
+    card_widgets.ds_done_label.text = f'<b>{", ".join(selected_datasets_names) if len(selected_datasets_names) < 5 else len(selected_datasets_names)}</b> datasets selected'
+
     card_widgets.select_datasets_button.loading = False
     card_widgets.select_datasets_button.disabled = True
     DataJson()['current_step'] += 1
     DataJson()['selected_datasets_names'] = selected_datasets_names
 
     run_sync(DataJson().synchronize_changes())
+    run_sync(state.synchronize_changes())

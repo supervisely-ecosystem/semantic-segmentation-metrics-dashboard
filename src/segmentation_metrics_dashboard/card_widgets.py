@@ -7,7 +7,7 @@ stats_by_classes_table = ClassicTable()
 stats_by_datasets_table = ClassicTable()
 
 images_table = ClassicTable(fixed_columns_num=6)
-images_gallery = GridGallery(columns_number=3)
+images_gallery = GridGallery(columns_number=3, enable_zoom=False, sync_views=True)
 image_matrix = ConfusionMatrix()
 
 

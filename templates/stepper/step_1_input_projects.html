@@ -1,4 +1,5 @@
-<sly-card title="Load Input Data" subtitle="select projects to calculate metrics on">
+<sly-card ref="step_1"
+          title="Load Input Data" subtitle="select projects to calculate metrics on">
     <div style="display:flex; flex-direction: row">
         <div style="margin: 0 15px 0 5px;">
             <h4>Ground Truth Project</h4>
@@ -16,6 +17,9 @@
         </div>
         <div style="">
             {{{ download_projects_button.to_html() }}}
+            <div v-if="data.current_step > 1" style="margin-top: 17px">{{{ projects_downloaded_done_label.to_html() }}}</div>
+
+
         </div>
 
 

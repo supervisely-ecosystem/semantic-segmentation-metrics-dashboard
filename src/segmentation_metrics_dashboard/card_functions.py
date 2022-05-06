@@ -13,15 +13,15 @@ import src.segmentation_metrics_dashboard.card_widgets as card_widgets
 
 
 def get_pixel_accuracy_for_image(image_stats):
-    current_image_score = 0  # from 0 to 1
+    current_image_score = []
 
     for current_class_name, current_class_matches in image_stats.items():
         class_score = current_class_matches.get(current_class_name)
 
         if class_score is not None:
-            current_image_score += class_score
+            current_image_score.append(class_score)
 
-    return round(current_image_score, 3)
+    return round(sum(current_image_score) / len(current_image_score), 3)  # from 0 to 1
 
 
 def calculate_general_pixel_accuracy():
@@ -62,7 +62,8 @@ def get_matched_pixels_matrix_for_image(current_image, classes_names):
                 row[match_name] += match_score
 
             sum_of_row = sum(list(row.values()))
-            row = [round((row[class_name] / sum_of_row), 3) for class_name in classes_names]
+            # row = [round((row[class_name] / sum_of_row), 3) for class_name in classes_names]
+            row = [round((row[class_name]), 3) for class_name in classes_names]
             data[row_index] = row
         else:
             data[row_index] = []
@@ -170,7 +171,7 @@ def get_stats_tables_content():
 
         # per datasets
         if len(classname2matched.values()) > 0:
-            stats_by_datasets[ds_name]['accuracy'] = sum(classname2matched.values()) / len(classname2matched.values())
+            stats_by_datasets[ds_name]['accuracy'] = round(sum(classname2matched.values()) / len(classname2matched.values()), 3)
             stats_by_datasets[ds_name]['matched'] = len(matched_images_in_dataset)
 
     # collecting iou
@@ -183,7 +184,7 @@ def get_stats_tables_content():
             for class_name_on_image, class_score in current_image.items():
                 scores_by_classes_in_dataset[class_name_on_image].append(class_score)
 
-        classname2score = {class_name: sum(scores_list) / len(scores_list) for class_name, scores_list in
+        classname2score = {class_name: round(sum(scores_list) / len(scores_list), 3) for class_name, scores_list in
                            scores_by_classes_in_dataset.items() if len(scores_list) > 0}
 
         for class_name, class_score in classname2score.items():
@@ -191,7 +192,7 @@ def get_stats_tables_content():
 
         # per datasets
         if len(classname2score.values()) > 0:
-            stats_by_datasets[ds_name]['mean iou'] = sum(classname2score.values()) / len(classname2score.values())
+            stats_by_datasets[ds_name]['mean iou'] = round(sum(classname2score.values()) / len(classname2score.values()), 3)
 
     # collecting images nums
     update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets,
@@ -204,7 +205,7 @@ def get_stats_tables_content():
         for score_key in ['accuracy', 'mean iou']:
             if len(stats_by_class_names[class_name][score_key]) > 0:
                 stats_by_class_names[class_name][score_key] = \
-                    sum(stats_by_class_names[class_name][score_key]) / len(stats_by_class_names[class_name][score_key])
+                    round(sum(stats_by_class_names[class_name][score_key]) / len(stats_by_class_names[class_name][score_key]), 3)
             else:
                 stats_by_class_names[class_name][score_key] = '-'
 
@@ -318,31 +319,40 @@ def get_matches_annotation(gt_ann: supervisely.Annotation, pred_ann: supervisely
     gt_mask, pred_mask = np.asarray(gt_mask), np.asarray(pred_mask)
 
     if selected_classes is None:
+        matched_pixels, unmatched_pixels = np.zeros(gt_ann.img_size), np.zeros(gt_ann.img_size)
         selected_classes = DataJson()['selected_classes_names']
+        for selected_class in selected_classes:
+            gt_color = gt_name2color.get(selected_class)
+            pred_color = pred_name2color.get(selected_class)
 
-    matched_pixels = np.zeros(shape=gt_ann.img_size)
-    unmatched_pixels = np.zeros(shape=gt_ann.img_size)
-    for selected_class in selected_classes:
-        gt_color = gt_name2color.get(selected_class)
-        pred_color = pred_name2color.get(selected_class)
+            if gt_color is not None and pred_color is None:
+                gt_unmatched = (gt_mask == gt_color).all(-1)
+                unmatched_pixels = np.logical_or(gt_unmatched, unmatched_pixels)
+            elif gt_color is None and pred_color is not None:
+                pred_unmatched = (pred_mask == pred_color).all(-1)
+                unmatched_pixels = np.logical_or(pred_unmatched, unmatched_pixels)
 
-        if gt_color is not None and pred_color is None:
-            gt_unmatched = (gt_mask == gt_color).all(-1)
-            unmatched_pixels = np.logical_or(gt_unmatched, unmatched_pixels)
-        elif gt_color is None and pred_color is not None:
-            pred_unmatched = (pred_mask == pred_color).all(-1)
-            unmatched_pixels = np.logical_or(pred_unmatched, unmatched_pixels)
+            elif gt_color is not None and pred_color is not None:
+                gt_pixels_of_interest = (gt_mask == gt_color).all(-1)
+                pred_pixels_of_interest = (pred_mask == pred_color).all(-1)
 
-        elif gt_color is not None and pred_color is not None:
-            gt_pixels_of_interest = (gt_mask == gt_color).all(-1)
-            pred_pixels_of_interest = (pred_mask == pred_color).all(-1)
+                matched_pixels_for_class = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
+                unmatched_pixels_for_class = np.logical_xor(gt_pixels_of_interest, pred_pixels_of_interest)
 
-            matched_pixels_for_class = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
-            unmatched_pixels_for_class = np.logical_xor(gt_pixels_of_interest, pred_pixels_of_interest)
+                matched_pixels = np.logical_or(matched_pixels_for_class, matched_pixels)
+                unmatched_pixels = np.logical_or(unmatched_pixels_for_class, unmatched_pixels)
+    else:
+        gt_class, pred_class = selected_classes[0], selected_classes[1]
+        gt_color, pred_color = gt_name2color[gt_class], pred_name2color[pred_class]
 
-            matched_pixels = np.logical_or(matched_pixels_for_class, matched_pixels)
-            unmatched_pixels = np.logical_or(unmatched_pixels_for_class, unmatched_pixels)
+        gt_interest, pred_interest = np.asarray(gt_mask == gt_color).all(-1), np.asarray(pred_mask == pred_color).all(-1)
 
+        if gt_class == pred_class:
+            matched_pixels = np.logical_and(gt_interest, pred_interest)
+            unmatched_pixels = np.logical_xor(gt_interest, matched_pixels)
+        else:
+            matched_pixels = np.zeros(gt_ann.img_size)
+            unmatched_pixels = np.logical_and(gt_interest, pred_interest)
 
     labels_list = []
     if np.sum(matched_pixels) > 0:

@@ -53,9 +53,8 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
 
     # seg_widgets.matched_pixels_matrix.data = seg_functions.get_matches_pixels_matrix_content()  # stats by ds
 
-
-    # state['showIRI'] = True
-
+    # card_widgets.classes_done_label.text = f'<b>{", ".join(selected_classes_names) if len(selected_classes_names) < 5 else len(selected_classes_names)}</b> classes selected'
+    card_widgets.classes_done_label.text = f'metrics successfully calculated'
     card_widgets.select_classes_button.loading = False
     card_widgets.select_classes_button.disabled = True
     DataJson()['current_step'] += 1

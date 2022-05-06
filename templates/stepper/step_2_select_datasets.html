@@ -28,6 +28,7 @@
               @selection-change="
                 (val) => {
                     state.selectedDatasets = val.map(x => x.left.name);
+                    post('/apply_changes/');
                 }
                 "
     >
@@ -71,8 +72,9 @@
             </template>
         </el-table-column>
     </el-table>
-    <div style="display:flex; flex-direction:row; justify-content: space-between; align-items: flex-end; margin: 0 5px; margin-top: 15px">
+    <div style="display:flex; flex-direction:column; margin: 0 5px; margin-top: 15px">
         <div>{{{ select_datasets_button.to_html() }}}</div>
+        <div v-if="data.current_step > 2" style="margin-top: 17px">{{{ ds_done_label.to_html() }}}</div>
 
     </div>
 </sly-card>

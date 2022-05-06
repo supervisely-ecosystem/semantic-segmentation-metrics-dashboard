@@ -87,13 +87,27 @@ def get_mask_with_colors_mapping(annotation):
     return mask, objname2color
 
 
-def get_size_of_gt_mask_union(gt_mask, gt_color):
+def get_size_of_gt_mask_union(gt_mask, pred_mask, gt_color, pred_color):
+    if pred_color is not None:
+        pred_interest = np.asarray(pred_mask == pred_color).all(-1)
+    else:
+        pred_interest = np.zeros(gt_mask.shape)
+
+    if gt_color is not None:
+        gt_interest = np.asarray(gt_mask == gt_color).all(-1)
+    else:
+        gt_interest = np.zeros(pred_mask.shape)
+
+    return np.logical_or(pred_interest, gt_interest)
+
+
+def get_gt_mask_class(gt_mask, gt_color):
     if gt_color is not None:
         gt_interest = np.asarray(gt_mask == gt_color).all(-1)
     else:
         gt_interest = np.zeros(gt_mask.shape)
 
-    return np.sum(gt_interest)
+    return gt_interest
 
 
 def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: supervisely.Annotation, ds_name, item_name):
@@ -111,8 +125,9 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
     img_size = np.prod(gt_ann.img_size)
 
     for gt_class_name in selected_classes_names:
-        size_of_class_union = get_size_of_gt_mask_union(gt_mask, gt_color_mapping.get(gt_class_name))
-        if size_of_class_union == 0:  # class not exists on both pixels
+        # class_union_mask = get_size_of_gt_mask_union(gt_mask, pred_mask, gt_color_mapping.get(gt_class_name), pred_color_mapping.get(gt_class_name))
+        class_union_mask = get_gt_mask_class(gt_mask, gt_color_mapping.get(gt_class_name))
+        if np.sum(class_union_mask) == 0:  # class not exists on both pixels
             continue
 
         db_pixels_matches.setdefault(gt_class_name, {})
@@ -140,14 +155,17 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
                 gt_pixels_of_interest = np.asarray(gt_mask == gt_color_mapping[gt_class_name]).all(-1)
                 pred_pixels_of_interest = np.asarray(pred_mask == pred_color_mapping[pred_class_name]).all(-1)
 
-                masks_intersection = np.sum(np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest))
-                masks_union = np.sum(np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest))
-
-                db_pixels_matches[gt_class_name][pred_class_name] = round(masks_intersection / size_of_class_union, 3)
+                matched_mask = np.logical_and(pred_pixels_of_interest, class_union_mask)
+                db_pixels_matches[gt_class_name][pred_class_name] = round(np.sum(matched_mask) / np.sum(class_union_mask), 3)
 
                 if gt_class_name == pred_class_name:
-                    iou = masks_intersection / masks_union
+                    masks_intersection = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
+                    masks_union = np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest)
+
+                    iou = np.sum(masks_intersection) / np.sum(masks_union)
                     db_iou_scores[gt_class_name] = round(iou, 3)
+
+
 
 
 def get_image_link(project_dir, ds_name, item_name):

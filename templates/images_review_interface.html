@@ -1,5 +1,10 @@
-<!--<el-dialog title="Images Review Interface" :visible.sync="state.showIRI">-->
-<sly-card title="Images Review Interface" subtitle="click on table row and review selected image">
+<el-dialog title="Images Review Interface" subtitle="click on table row and review selected image"
+           :visible.sync="state.showIRI" @close="state.showIRI=false; post('/apply_changes/')"
+
+           size="large"
+           top="0"
+    >
+
     <div>
         <div style="text-align: center; margin-bottom: 15px; margin-top: 4px; font-weight: 600; font-size: 18px">
             Images Table
@@ -19,5 +24,5 @@
         <div  style="margin: 25px 0"></div>
         {{{ image_matrix.to_html() }}}
     </div>
-</sly-card>
-<!--</el-dialog>-->
+
+</el-dialog>

@@ -24,6 +24,11 @@ def image_matrix_cell_clicked(state: StateJson = Depends(StateJson.from_request)
     run_sync(DataJson().synchronize_changes())
 
 
+@card_widgets.open_iri_button.add_route(g.app, route=card_widgets.open_iri_button.Routes.BUTTON_CLICKED)
+def open_iri_button(state: StateJson = Depends(StateJson.from_request)):
+    state['showIRI'] = True
+    run_sync(state.synchronize_changes())
+
 
 
 

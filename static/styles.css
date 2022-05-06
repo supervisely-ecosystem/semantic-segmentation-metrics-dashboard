@@ -8,3 +8,8 @@
     border-bottom: 2px dashed #e9e9e9;
     background: #fdfdfd;
 }
+
+/*.custom-el-dialog .el-dialog .el-dialog--small {*/
+/*    top: 0; !important*/
+/*    width: 80%; !important*/
+/*}*/

@@ -1,6 +1,6 @@
 
 
-from supervisely.app.widgets import ProjectSelector, ElementButton, SlyTqdm
+from supervisely.app.widgets import ProjectSelector, ElementButton, SlyTqdm, DoneLabel
 
 import src.sly_globals as g
 
@@ -11,4 +11,5 @@ download_projects_button = ElementButton(text='SELECT', button_type='primary')
 
 download_projects_progress = SlyTqdm(message='')
 
+projects_downloaded_done_label = DoneLabel()
 
