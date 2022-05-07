@@ -429,17 +429,10 @@ def highlight_selected_class_on_images(state):
     gt_selected_class = cell_data['row_name']
     pred_selected_class = cell_data['col_name']
 
-
     refill_image_gallery(state, selected_classes=[gt_selected_class, pred_selected_class])
 
 
-def get_filtered_items_by_classes_names(state):
-    selected_cell = card_widgets.matched_pixels_matrix.get_selected_cell(state)
-    cell_data = selected_cell['cell_data']
-
-    gt_selected_class = cell_data['row_name']
-    pred_selected_class = cell_data['col_name']
-
+def get_filtered_items_by_classes_names(gt_selected_class, pred_selected_class):
     filtered_items = {ds_name: [] for ds_name in g.ds2matched.keys()}
 
     for ds_name, items_names in g.ds2matched.items():
@@ -465,3 +458,22 @@ def get_filtered_table(filtered_items):
             filtered_table.append(row)
 
     return filtered_table
+
+
+def refill_images_table(table_content):
+    if len(table_content) > 0:
+        card_widgets.images_table.data = pd.DataFrame(data=[list(row.values()) for row in table_content],
+                                                      columns=list(table_content[0].keys()))
+    else:
+        card_widgets.images_table.data = pd.DataFrame(data=[], columns=[])
+
+
+def get_filtered_items_by_ds_names(ds_names):
+    filtered_items = {ds_name: [] for ds_name in g.ds2matched.keys()}
+
+    for ds_name, items_names in g.ds2matched.items():
+        if ds_name not in ds_names:
+            continue
+
+        filtered_items[ds_name] = items_names
+    return filtered_items

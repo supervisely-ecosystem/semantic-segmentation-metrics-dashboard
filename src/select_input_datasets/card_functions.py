@@ -114,7 +114,7 @@ def get_classes_statuses(gt_class_stats, pred_class_stats):
     supported_shapes = [
         supervisely.Bitmap.geometry_name(),
         supervisely.Polygon.geometry_name(),
-        supervisely.Rectangle.geometry_name(),
+        # supervisely.Rectangle.geometry_name(),
     ]
 
     shapes_unmatched = not (gt_class_stats['shape'] in supported_shapes and pred_class_stats['shape'] in supported_shapes)
@@ -152,7 +152,7 @@ def get_formatted_table_content(objects_info):
             'messages': [
                 'MATCHED',
                 'CONVERTED',
-                'UNMATCHED SHAPE',
+                'SHAPES UNMATCHED',
                 'PAIR NOT FOUND'
             ]
         }
@@ -176,6 +176,8 @@ def get_formatted_table_content(objects_info):
                 unformatted_statuses['matched'] = objects_info['matched'][gt_class_name]
             elif unformatted_statuses['converted'] == -1:
                 unformatted_statuses['converted'] = objects_info['matched'][gt_class_name]
+            elif unformatted_statuses['unmatched'] == -1:
+                unformatted_statuses['shape_unmatched'] = -1
 
             if unformatted_statuses['unmatched'] != -1:
                 DataJson()['allowed_classes_names'].append(gt_class_name)
