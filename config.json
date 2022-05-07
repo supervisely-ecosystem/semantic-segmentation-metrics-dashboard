@@ -1,5 +1,5 @@
 {
-    "name": "Application Name",
+    "name": "Semantic Segmentation Analysis",
     "type": "app",
     "version": "2.0.0",
     "categories": [
@@ -15,9 +15,5 @@
     "icon": "https://imgur.com/a9u0M3Y.png",
     "icon_cover": true,
 
-    "instance_version": "6.4.45",
-
-    "context_menu": {
-        "target": ["images_project"]
-    }
+    "instance_version": "6.4.45"
 }
