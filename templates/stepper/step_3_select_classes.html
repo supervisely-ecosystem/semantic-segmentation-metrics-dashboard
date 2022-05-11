@@ -6,7 +6,7 @@
               :data="data.classes_table_content"
               :disabled="data.current_step > 2"
               style="width: 100%; height: 400px; overflow-y: scroll"
-              :default-sort="{prop: 'left.name', order: 'ascending'}"
+              :default-sort="{prop: 'statuses.numbers', order: 'descending'}"
               @selection-change="
                 (val) => {
                     state.selectedClasses = val.map(x => x.left.name);
@@ -31,7 +31,7 @@
                 </span>
             </template>
         </el-table-column>
-        <el-table-column label="Comparison Result" align="center">
+        <el-table-column sortable prop="statuses.numbers" label="Comparison Result" align="center">
             <template scope="scope">
                 <div v-for="(count, index) in scope.row.statuses.numbers">
                     <div v-if="count !== 0">

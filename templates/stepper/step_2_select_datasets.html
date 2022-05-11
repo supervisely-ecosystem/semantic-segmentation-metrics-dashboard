@@ -26,7 +26,7 @@
               :data="data.datasets_table_content"
 
               style="width: 100%"
-              :default-sort="{prop: 'left.name', order: 'ascending'}"
+              default-sort="{prop: 'statuses.numbers', order: 'descending'}"
               @selection-change="
                 (val) => {
                     state.selectedDatasets = val.map(x => x.left.name);
@@ -45,7 +45,7 @@
                 </div>
             </template>
         </el-table-column>
-        <el-table-column align="center" label="Comparison Result">
+        <el-table-column sortable prop="statuses.numbers" align="center" label="Comparison Result">
             <template scope="scope">
                 <div v-for="(count, index) in scope.row.statuses.numbers">
                     <div v-if="count !== 0">

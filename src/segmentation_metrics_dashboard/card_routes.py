@@ -15,6 +15,7 @@ def toggle_iri_button(state):
     if state['showIRI'] is not True:
         card_widgets.toggle_iri_button.text = 'Open Images Review Interface <i style="margin-left: 5px" class="zmdi zmdi-collection-image"></i>'
         card_functions.refill_images_table(table_content=g.images_table_content)
+        card_widgets.images_gallery.clean_up()
     else:
         card_widgets.toggle_iri_button.text = 'Back To Statistics <i style="margin-left: 5px" class="zmdi zmdi-chart"></i>'
 
