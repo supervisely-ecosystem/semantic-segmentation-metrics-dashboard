@@ -143,6 +143,7 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
                 db_pixels_matches[gt_class_name][pred_class_name] = 0
                 if gt_class_name == pred_class_name:
                     db_iou_scores[gt_class_name] = 0
+                    db_pixels_matches[gt_class_name][pred_class_name] = 0
                 continue
 
             elif gt_color is None and pred_color is not None:  # if object appears on PRED mask only
@@ -156,14 +157,14 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
                 pred_pixels_of_interest = np.asarray(pred_mask == pred_color_mapping[pred_class_name]).all(-1)
 
                 matched_mask = np.logical_and(pred_pixels_of_interest, class_union_mask)
-                db_pixels_matches[gt_class_name][pred_class_name] = round(np.sum(matched_mask) / np.sum(class_union_mask), 3)
+                db_pixels_matches[gt_class_name][pred_class_name] = np.sum(matched_mask) / np.sum(class_union_mask)
 
                 if gt_class_name == pred_class_name:
                     masks_intersection = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
                     masks_union = np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest)
 
                     iou = np.sum(masks_intersection) / np.sum(masks_union)
-                    db_iou_scores[gt_class_name] = round(iou, 3)
+                    db_iou_scores[gt_class_name] = iou
 
 
 def get_image_link(project_dir, ds_name, item_name):

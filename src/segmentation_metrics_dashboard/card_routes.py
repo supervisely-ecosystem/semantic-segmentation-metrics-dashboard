@@ -82,8 +82,11 @@ def datasets_table_cell_clicked(state: StateJson = Depends(StateJson.from_reques
 
 @card_widgets.images_table.add_route(g.app, route=card_widgets.images_table.Routes.CELL_CLICKED)
 def table_cell_clicked(state: StateJson = Depends(StateJson.from_request)):
-    DataJson()['image_to_analyze_selected'] = True
+    selected_cell = card_widgets.images_table.get_selected_cell(state)
+    if selected_cell['row_data'] is None or selected_cell['row_data'].get('ds name') is None:
+        return
 
+    DataJson()['image_to_analyze_selected'] = True
     card_functions.refill_image_gallery(state)
     card_widgets.image_matrix.data = card_functions.get_matrix_for_image_content(state)
 

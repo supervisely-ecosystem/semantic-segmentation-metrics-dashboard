@@ -62,9 +62,9 @@ def get_matched_pixels_matrix_for_image(current_image, classes_names):
             for match_name, match_score in current_class_matches.items():
                 row[match_name] += match_score
 
-            sum_of_row = sum(list(row.values()))
+            # sum_of_row = sum(list(row.values()))
             # row = [round((row[class_name] / sum_of_row), 3) for class_name in classes_names]
-            row = [round((row[class_name]), 3) for class_name in classes_names]
+            row = [round((row[class_name]), 5) for class_name in classes_names]
             data[row_index] = row
         else:
             data[row_index] = []
@@ -102,7 +102,7 @@ def get_matches_pixels_matrix_content():
 
     # data = np.sum(data, axis=0) / len(data)
 
-    return pd.DataFrame(data=existing_class_matrix.round(3), columns=existing_class_names)
+    return pd.DataFrame(data=existing_class_matrix.round(4), columns=existing_class_names)
 
 
 def get_metric_color(metric_value):
@@ -255,7 +255,7 @@ def get_images_table_content():
                 accuracy = '-'
 
             iou_scores = g.iou_scores.get(ds_name, {}).get(item_name)
-            scores_per_class = {class_name: '-' for class_name in selected_classes_names}
+            scores_per_class = {class_name: None for class_name in selected_classes_names}
 
             if iou_scores is not None:
                 mean_iou = round(sum(list(iou_scores.values())) / len(iou_scores), 3)
@@ -308,10 +308,20 @@ def get_matrix_for_image_content(state):
     for class_name_index, class_name_data in enumerate(matrix_for_image):
         if len(class_name_data) == 0:
             columns_indexes_to_remove.append(class_name_index)
+            matrix_for_image[class_name_index] = [0 for _ in range(len(selected_classes_names))]
 
+    # adding predicted, but not presented in GT classes
     matrix_for_image = np.asarray(matrix_for_image)
-    matrix_for_image = np.delete(matrix_for_image, columns_indexes_to_remove, axis=1)
-    selected_classes_names = np.delete(selected_classes_names, columns_indexes_to_remove, axis=0)
+    columns_sum = np.sum(matrix_for_image, axis=0)
+
+    filtered_columns_to_remove = []
+    for index_to_remove in columns_indexes_to_remove:
+        if not (columns_sum[index_to_remove] > 0):
+            filtered_columns_to_remove.append(index_to_remove)
+
+    matrix_for_image = np.delete(matrix_for_image, filtered_columns_to_remove, axis=0)
+    matrix_for_image = np.delete(matrix_for_image, filtered_columns_to_remove, axis=1)
+    selected_classes_names = np.delete(selected_classes_names, filtered_columns_to_remove, axis=0)
 
     return pd.DataFrame(data=matrix_for_image, columns=selected_classes_names)
 
