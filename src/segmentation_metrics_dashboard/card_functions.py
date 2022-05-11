@@ -236,6 +236,11 @@ def get_stats_tables_content():
             'datasets': pd.DataFrame(data=stats_by_datasets_data, columns=stats_by_datasets_columns)}
 
 
+def item_has_masks_except_bg(iou_scores):
+    iou_scores.pop('__bg__')
+    return sum(list(iou_scores.values())) > 0
+
+
 def get_images_table_content():
     selected_classes_names = DataJson()['selected_classes_names']
     table_content = []
@@ -255,6 +260,10 @@ def get_images_table_content():
                 accuracy = '-'
 
             iou_scores = g.iou_scores.get(ds_name, {}).get(item_name)
+
+            if not item_has_masks_except_bg(copy.deepcopy(iou_scores)):
+                continue
+
             scores_per_class = {class_name: None for class_name in selected_classes_names}
 
             if iou_scores is not None:
