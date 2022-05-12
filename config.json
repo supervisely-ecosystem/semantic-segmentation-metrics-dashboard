@@ -14,6 +14,7 @@
 
     "icon": "https://imgur.com/a9u0M3Y.png",
     "icon_cover": true,
+    "integrated_into": ["panel"],
 
     "instance_version": "6.4.45"
 }
