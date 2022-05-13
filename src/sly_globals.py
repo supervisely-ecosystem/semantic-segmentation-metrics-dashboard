@@ -54,6 +54,8 @@ gt_project_dir_converted = os.path.join(app_root_directory, 'tempfiles', 'gt_pro
 pred_project_dir_converted = os.path.join(app_root_directory, 'tempfiles', 'pred_project_dir_converted')
 
 ds2matched = {}
+ds2matched_backup = None
+
 gt_ds2info = {}
 pred_ds2info = {}
 

@@ -32,6 +32,7 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     DataJson()['selected_classes_names'] = selected_classes_names
 
     card_functions.apply_classes_to_projects(selected_classes_names)
+    card_functions.filter_matched_items_by_classes(selected_classes_names)
 
     card_functions.calculate_scores_tables(gt_project_dir=g.gt_project_dir_converted,
                                            pred_project_dir=g.pred_project_dir_converted)

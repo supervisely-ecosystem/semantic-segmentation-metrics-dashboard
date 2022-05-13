@@ -13,10 +13,13 @@ def toggle_iri_button(state):
     state['showIRI'] = not state['showIRI']
 
     if state['showIRI'] is not True:
-        card_widgets.toggle_iri_button.text = 'Open Images Review Interface <i style="margin-left: 5px" class="zmdi zmdi-collection-image"></i>'
+        card_widgets.toggle_iri_button.text = 'Open Images Review Interface without filters <i style="margin-left: 5px" class="zmdi zmdi-collection-image"></i>'
         card_functions.refill_images_table(table_content=g.images_table_content)
         card_widgets.images_gallery.clean_up()
         DataJson()['image_to_analyze_selected'] = False
+
+        card_widgets.notification_filtered_images.title = 'Table contains all matched images from project'
+        card_widgets.notification_filtered_images.description = 'you can filter images table by clicking a cell on stats page'
     else:
         card_widgets.toggle_iri_button.text = 'Back To Statistics <i style="margin-left: 5px" class="zmdi zmdi-chart"></i>'
 
@@ -46,6 +49,10 @@ def matched_pixels_matrix_cell_clicked(state: StateJson = Depends(StateJson.from
     images_table_filtered = card_functions.get_filtered_table(filtered_items=filtered_items)
     card_functions.refill_images_table(table_content=images_table_filtered)
 
+    card_widgets.notification_filtered_images.title = 'Images Table filtered by matrix cell'
+    card_widgets.notification_filtered_images.description = f'GT images must contain class {gt_selected_class}<br>' \
+                                                            f'PRED images must contain class {pred_selected_class}'
+
     card_widgets.matched_pixels_matrix.loading = False
     toggle_iri_button(state=state)
 
@@ -63,6 +70,9 @@ def classes_table_cell_clicked(state: StateJson = Depends(StateJson.from_request
     images_table_filtered = card_functions.get_filtered_table(filtered_items=filtered_items)
     card_functions.refill_images_table(table_content=images_table_filtered)
 
+    card_widgets.notification_filtered_images.title = 'Images Table filtered by Class'
+    card_widgets.notification_filtered_images.description = f'<b>{class_name}</b> class will be present on both images'
+
     toggle_iri_button(state=state)
 
 
@@ -78,6 +88,9 @@ def datasets_table_cell_clicked(state: StateJson = Depends(StateJson.from_reques
 
     images_table_filtered = card_functions.get_filtered_table(filtered_items=filtered_items)
     card_functions.refill_images_table(table_content=images_table_filtered)
+
+    card_widgets.notification_filtered_images.title = 'Images Table filtered by Dataset'
+    card_widgets.notification_filtered_images.description = f'dataset with name <b>{ds_name}</b> selected'
 
     toggle_iri_button(state=state)
 

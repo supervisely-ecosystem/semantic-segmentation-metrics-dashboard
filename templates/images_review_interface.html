@@ -1,4 +1,3 @@
-
 <!--<el-dialog-->
 
 <!--        title="Images Review Interface" subtitle="click on table row and review selected image"-->
@@ -23,7 +22,12 @@
         {{{ image_matrix.to_html() }}}
     </div>
     <div v-else>
-        {{{ notification_box_inside_iri.to_html() }}}
+        <div style="margin: 10px 0">
+            {{{ notification_filtered_images.to_html() }}}
+        </div>
+        <div style="margin: 10px 0">
+            {{{ notification_box_inside_iri.to_html() }}}
+        </div>
     </div>
 
     <hr class="pretty-hr" style="margin: 25px 0"/>

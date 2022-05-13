@@ -54,6 +54,9 @@ class PackerUnpacker:
 
     @staticmethod
     def pandas_unpacker(data: pd.DataFrame):
+        data = data.where(pd.notnull(data), None)
+        data = data.astype(object).replace(np.nan, 'None')
+
         formatted_rows = []
         for origin_row in list(data.values):
             formatted_rows.append([{'value': element} for element in origin_row])
