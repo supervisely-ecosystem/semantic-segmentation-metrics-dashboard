@@ -12,6 +12,9 @@ from supervisely.app import DataJson
 
 
 def calculate_scores_tables(gt_project_dir, pred_project_dir):
+    g.pixels_matches = {}
+    g.iou_scores = {}
+
     ds_names = DataJson()['selected_datasets_names']
 
     gt_project_meta = supervisely.Project(directory=gt_project_dir, mode=supervisely.OpenMode.READ).meta

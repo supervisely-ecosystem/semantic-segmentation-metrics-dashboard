@@ -57,7 +57,7 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
         g.pred_project['workspace_id'] = card_widgets.pred_project_selector.get_selected_workspace_id(state)
         g.pred_project['project_id'] = card_widgets.pred_project_selector.get_selected_project_id(state)
 
-        card_widgets.download_projects_button.disabled = True
+        # card_widgets.download_projects_button.disabled = True
         card_widgets.projects_downloaded_done_label.text = 'projects downloaded'
 
         DataJson()['current_step'] += 1
@@ -72,3 +72,12 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
     finally:
         card_widgets.download_projects_button.loading = False
         run_sync(DataJson().synchronize_changes())
+
+
+@card_widgets.reselect_projects_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
+def reselect_projects_button_clicked(state: supervisely.app.StateJson = Depends(supervisely.app.StateJson.from_request)):
+    card_widgets.pred_project_selector.disabled = False
+    card_widgets.gt_project_selector.disabled = False
+
+    DataJson()['current_step'] = 1
+    run_sync(DataJson().synchronize_changes())

@@ -21,6 +21,7 @@ import src.select_input_classes.card_functions as card_functions
 def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.app.StateJson.from_request)):
     selected_classes_names = set(state['selectedClasses'])
     selected_classes_names = list(set(selected_classes_names).intersection(set(DataJson()['allowed_classes_names'])))
+
     if len(selected_classes_names) == 0:
         raise HTTPException(status_code=500, detail={'title': "Matched or Converted classes not selected",
                                                      'message': f'Please select classes and try again'})
@@ -51,15 +52,23 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     seg_widgets.images_table.data = pd.DataFrame(data=[list(row.values()) for row in g.images_table_content],
                                                  columns=list(g.images_table_content[0].keys()))
 
-    # seg_widgets.matched_pixels_matrix.data = seg_functions.get_matches_pixels_matrix_content()  # stats by ds
-
     # card_widgets.classes_done_label.text = f'<b>{", ".join(selected_classes_names) if len(selected_classes_names) < 5 else len(selected_classes_names)}</b> classes selected'
     card_widgets.classes_done_label.text = f'metrics successfully calculated'
     card_widgets.select_classes_button.loading = False
-    card_widgets.select_classes_button.disabled = True
+
     seg_widgets.toggle_iri_button.disabled = False
+    seg_widgets.toggle_iri_button.text = 'Open Images Review Interface <i style="margin-left: 5px" class="zmdi zmdi-collection-image"></i>'
+    state['showIRI'] = False
+
+    DataJson()['image_to_analyze_selected'] = False
 
     DataJson()['current_step'] += 1
 
-    run_sync(StateJson().synchronize_changes())
+    run_sync(state.synchronize_changes())
+    run_sync(DataJson().synchronize_changes())
+
+
+@card_widgets.reselect_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
+def reselect_classes_button_clicked(state: supervisely.app.StateJson = Depends(supervisely.app.StateJson.from_request)):
+    DataJson()['current_step'] = 3
     run_sync(DataJson().synchronize_changes())

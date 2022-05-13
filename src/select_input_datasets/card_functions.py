@@ -50,6 +50,7 @@ def update_objects_areas(objects_info, image_annotation):
 
 def collect_objects_information(objects_info, selected_datasets_names, gt_project_dir, pred_project_dir,
                                 collect_matched_images_names=True, mode='info'):
+
     gt_project_meta = supervisely.Project(directory=gt_project_dir, mode=supervisely.OpenMode.READ).meta
     pred_project_meta = supervisely.Project(directory=pred_project_dir, mode=supervisely.OpenMode.READ).meta
 
@@ -228,6 +229,8 @@ def get_classes_table_content(selected_datasets_names):
 
 
 def cache_datasets_infos(selected_datasets_names):
+    g.gt_ds2info = {}
+    g.pred_ds2info = {}
     for selected_dataset_name in selected_datasets_names:
         g.gt_ds2info[selected_dataset_name] = g.api.dataset.get_info_by_name(parent_id=g.gt_project['project_id'], name=selected_dataset_name)
         g.pred_ds2info[selected_dataset_name] = g.api.dataset.get_info_by_name(parent_id=g.pred_project['project_id'], name=selected_dataset_name)

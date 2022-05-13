@@ -18,7 +18,9 @@
             {{{ download_projects_progress.to_html() }}}
         </div>
         <div style="">
-            {{{ download_projects_button.to_html() }}}
+            <div v-if="data.current_step < 2">{{{ download_projects_button.to_html() }}}</div>
+            <div v-else>{{{ reselect_projects_button.to_html() }}}</div>
+
             <div v-if="data.current_step > 1" style="margin-top: 17px">{{{ projects_downloaded_done_label.to_html() }}}</div>
 
 
