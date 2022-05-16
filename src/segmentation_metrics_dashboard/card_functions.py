@@ -473,10 +473,10 @@ def get_filtered_table(filtered_items):
 
 def refill_images_table(table_content):
     if len(table_content) > 0:
-        card_widgets.images_table.data = pd.DataFrame(data=[list(row.values()) for row in table_content],
-                                                      columns=list(table_content[0].keys()))
+        card_widgets.images_table.read_pandas(pd.DataFrame(data=[list(row.values()) for row in table_content],
+                                                           columns=list(table_content[0].keys())))
     else:
-        card_widgets.images_table.data = pd.DataFrame(data=[], columns=[])
+        card_widgets.images_table.read_pandas(pd.DataFrame(data=[], columns=[]))
 
 
 def get_filtered_items_by_ds_names(ds_names):

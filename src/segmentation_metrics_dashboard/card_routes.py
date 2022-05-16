@@ -103,7 +103,7 @@ def table_cell_clicked(state: StateJson = Depends(StateJson.from_request)):
 
     DataJson()['image_to_analyze_selected'] = True
     card_functions.refill_image_gallery(state)
-    card_widgets.image_matrix.data = card_functions.get_matrix_for_image_content(state)
+    card_widgets.image_matrix.read_pandas(card_functions.get_matrix_for_image_content(state))
 
     run_sync(DataJson().synchronize_changes())
 

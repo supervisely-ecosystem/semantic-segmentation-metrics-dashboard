@@ -12,7 +12,6 @@ import src.sly_functions as f
 import src.segmentation_metrics_dashboard.card_functions as seg_functions
 import src.segmentation_metrics_dashboard.card_widgets as seg_widgets
 
-
 import src.select_input_classes.card_widgets as card_widgets
 import src.select_input_classes.card_functions as card_functions
 
@@ -42,16 +41,16 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     seg_functions.colorize_metrics()
 
     # fill matrix and tables
-    seg_widgets.matched_pixels_matrix.data = seg_functions.get_matches_pixels_matrix_content()  # matches matrix
+    seg_widgets.matched_pixels_matrix.read_pandas(seg_functions.get_matches_pixels_matrix_content()) # matches matrix
 
     stats_tables_content = seg_functions.get_stats_tables_content()
-    seg_widgets.stats_by_classes_table.data = stats_tables_content['classes']  # stats by classes
-    seg_widgets.stats_by_datasets_table.data = stats_tables_content['datasets']  # stats by classes
+    seg_widgets.stats_by_classes_table.read_pandas(stats_tables_content['classes'])  # stats by classes
+    seg_widgets.stats_by_datasets_table.read_pandas(stats_tables_content['datasets'])  # stats by classes
 
     g.images_table_content = seg_functions.get_images_table_content()
 
-    seg_widgets.images_table.data = pd.DataFrame(data=[list(row.values()) for row in g.images_table_content],
-                                                 columns=list(g.images_table_content[0].keys()))
+    seg_widgets.images_table.read_pandas(pd.DataFrame(data=[list(row.values()) for row in g.images_table_content],
+                                                      columns=list(g.images_table_content[0].keys())))
 
     # card_widgets.classes_done_label.text = f'<b>{", ".join(selected_classes_names) if len(selected_classes_names) < 5 else len(selected_classes_names)}</b> classes selected'
     card_widgets.classes_done_label.text = f'metrics successfully calculated'

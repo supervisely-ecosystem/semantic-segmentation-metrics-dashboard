@@ -3,7 +3,7 @@ import pandas as pd
 from supervisely.app.widgets import ElementButton, ConfusionMatrix, ClassicTable, GridGallery, NotificationBox
 
 
-interactive_interface_notification = NotificationBox(box_type='info', title='All cells are clickable', description='You can select specific cell and review images')
+interactive_interface_notification = NotificationBox(box_type='info', title='All cells are clickable', description='you can select specific cell and review images')
 
 
 toggle_iri_button = ElementButton(text='Open Images Review Interface without filters <i style="margin-left: 5px" class="zmdi zmdi-collection-image"></i>', button_type='warning', button_size='small')

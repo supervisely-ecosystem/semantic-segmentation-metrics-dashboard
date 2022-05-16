@@ -67,7 +67,7 @@ def download_selected_projects(state: supervisely.app.StateJson = Depends(superv
 
         logger.warn(f'Cannot download projects: {repr(ex)}', exc_info=True)
         raise HTTPException(status_code=500, detail={'title': "Cannot download projects",
-                                                     'message': f'Please select input data and try again'})
+                                                     'message': f'Please reselect input data and try again'})
 
     finally:
         card_widgets.download_projects_button.loading = False
