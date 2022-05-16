@@ -57,7 +57,7 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     card_widgets.select_classes_button.loading = False
 
     seg_widgets.toggle_iri_button.disabled = False
-    seg_widgets.toggle_iri_button.text = 'Open Images Review Interface <i style="margin-left: 5px" class="zmdi zmdi-collection-image"></i>'
+    seg_widgets.toggle_iri_button.text = 'Open Images Review Interface without filters <i style="margin-left: 5px" class="zmdi zmdi-collection-image"></i>'
     state['showIRI'] = False
 
     DataJson()['image_to_analyze_selected'] = False

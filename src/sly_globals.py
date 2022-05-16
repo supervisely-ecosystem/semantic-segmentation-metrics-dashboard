@@ -80,6 +80,12 @@ structure: ds -> image ->
 }
 """
 
+images_accuracy = {}
+"""
+structure: ds -> image -> accuracy 
+"""
+
+
 iou_scores = {}
 
 """

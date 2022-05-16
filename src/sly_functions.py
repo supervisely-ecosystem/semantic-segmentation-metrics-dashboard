@@ -122,7 +122,8 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
     gt_mask, gt_color_mapping = get_mask_with_colors_mapping(gt_ann)
     pred_mask, pred_color_mapping = get_mask_with_colors_mapping(pred_ann)
 
-    img_size = np.prod(gt_ann.img_size)
+    img_size = np.prod(gt_ann.img_size[:2])
+    image_intersected_pixels_num = 0
 
     for gt_class_name in selected_classes_names:
         # class_union_mask = get_size_of_gt_mask_union(gt_mask, pred_mask, gt_color_mapping.get(gt_class_name), pred_color_mapping.get(gt_class_name))
@@ -165,6 +166,10 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
 
                     iou = np.sum(masks_intersection) / np.sum(masks_union)
                     db_iou_scores[gt_class_name] = iou
+
+                    image_intersected_pixels_num += np.sum(masks_intersection)
+
+    g.images_accuracy.setdefault(ds_name, {})[item_name] = image_intersected_pixels_num / img_size
 
 
 def get_image_link(project_dir, ds_name, item_name):
