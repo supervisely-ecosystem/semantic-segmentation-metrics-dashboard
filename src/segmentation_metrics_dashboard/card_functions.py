@@ -185,7 +185,7 @@ def get_stats_tables_content():
                 sum(classname2score.values()) / len(classname2score.values()), 3)
 
     # collecting images nums
-    update_class_items_stats_for_project(g.gt_project_dir, stats_by_class_names, stats_by_datasets,
+    update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets,
                                          flag='gt images num')
     update_class_items_stats_for_project(g.pred_project_dir, stats_by_class_names, stats_by_datasets,
                                          flag='pred images num')

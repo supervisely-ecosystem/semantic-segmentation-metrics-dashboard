@@ -31,8 +31,7 @@ def get_project_items_count_by_class_names(directory):
         for item_name in items_names:
             ann = dataset.get_ann(item_name, project_meta)
             for label in ann.labels:
-                ds2counter[dataset.name][label.obj_class.name] = ds2counter[dataset.name].get(label.obj_class.name,
-                                                                                              0) + 1
+                ds2counter[dataset.name][label.obj_class.name] = ds2counter[dataset.name].get(label.obj_class.name, 0) + 1
 
     return ds2counter
 
