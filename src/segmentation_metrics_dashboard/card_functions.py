@@ -13,26 +13,13 @@ import src.segmentation_metrics_dashboard.card_widgets as card_widgets
 from supervisely.app.fastapi import run_sync
 
 
-def get_pixel_accuracy_for_image(image_stats):
-    current_image_score = []
-
-    for current_class_name, current_class_matches in image_stats.items():
-        class_score = current_class_matches.get(current_class_name)
-
-        if class_score is not None:
-            current_image_score.append(class_score)
-
-    return round(sum(current_image_score) / len(current_image_score), 3)  # from 0 to 1
-
-
 def calculate_general_pixel_accuracy():
     # calculating Pixels Accuracy
-
     mean_between_images_accuracy = []
-    for matched_images_in_dataset in g.pixels_matches.values():
-        for current_image in matched_images_in_dataset.values():
-            current_image_score = get_pixel_accuracy_for_image(image_stats=current_image)
-            mean_between_images_accuracy.append(current_image_score)
+
+    for ds_name, matched_images_in_dataset in g.images_accuracy.items():
+        accuracy_scores = list(matched_images_in_dataset.values())
+        mean_between_images_accuracy.append(sum(accuracy_scores) / len(accuracy_scores))
 
     return sum(mean_between_images_accuracy) / len(mean_between_images_accuracy)  # mean by project
 
@@ -200,7 +187,7 @@ def get_stats_tables_content():
     # collecting images nums
     update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets,
                                          flag='gt images num')
-    update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets,
+    update_class_items_stats_for_project(g.pred_project_dir_converted, stats_by_class_names, stats_by_datasets,
                                          flag='pred images num')
 
     # scores lists to values
@@ -250,7 +237,7 @@ def get_images_table_content():
         for item_name in matched_items_names:
             pixels_matches = g.pixels_matches.get(ds_name, {}).get(item_name)
             if pixels_matches is not None:
-                accuracy = round(get_pixel_accuracy_for_image(image_stats=pixels_matches), 3)
+                accuracy = round(g.images_accuracy[ds_name][item_name], 3)
             else:
                 accuracy = '-'
 
