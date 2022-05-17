@@ -95,7 +95,7 @@ def collect_objects_information(objects_info, selected_datasets_names, gt_projec
 def convert_areas_to_percentage(objects_info):
     images_area = objects_info.pop('images_area')
     for object_info in objects_info.values():
-        object_info['area'] = int(object_info['area'] / images_area * 100)
+        object_info['area'] = round((object_info['area'] / images_area * 100), 2)
 
 
 def get_class_formatted_info(class_info=None):
