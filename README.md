@@ -47,10 +47,10 @@ Application key points:
 
 📋 Content:
 
-* <a href="#step-1-select-projects">Step 1 — Select Projects</a>
-* <a href="#step-2-select-datasets">Step 2 — Select Datasets</a>
-* <a href="#step-3-select-classes">Step 3 — Select Classes</a>
-* <a href="#step4">Step 4 — Metrics Dashboard</a>
+* <a href="#step-1--select-projects">Step 1 — Select Projects</a>
+* <a href="#step-2--select-datasets">Step 2 — Select Datasets</a>
+* <a href="#step-3--select-classes">Step 3 — Select Classes</a>
+* <a href="#step-4--metrics-dashboard">Step 4 — Metrics Dashboard</a>
 
 
 ### Step 1 — Select Projects
@@ -58,14 +58,14 @@ Application key points:
 Select Ground Truth and Predicted projects.   
 Application converts projects to Segmentation Task (does not change the originals).
 
-<img src="https://imgur.com/4wTXets.png" style="width: 100%;"/>
+<img src="https://imgur.com/DA5B2FQ.png" style="width: 100%;"/>
 
 
 ### Step 2 — Select Datasets
 
 Select datasets to analyse.  
 Unmatched images (by image name or image hash) will be automatically skipped.
-<img src="https://imgur.com/qMen4rM.png" style="width: 100%;"/>
+<img src="https://imgur.com/RNWq90m.png" style="width: 100%;"/>
 
 
 ### Step 3 — Select Classes
@@ -73,7 +73,7 @@ Unmatched images (by image name or image hash) will be automatically skipped.
 Select classes to analyse.  
 Unmatched images (if there are no masks on both images) will be automatically skipped.
 
-<img src="https://imgur.com/5rTphf3.png" style="width: 100%;"/>
+<img src="https://imgur.com/T6hBSKb.png" style="width: 100%;"/>
 
 
 ### Step 4 — Metrics Dashboard
@@ -92,7 +92,7 @@ That means you can use Matched Pixels Matrix, Statistics by Classes or Statistic
 
 You also can open Images Table without any filters — just click on **Open Images Review Interface Without Filters** button.
 
-<img src="https://imgur.com/D7tXNeJ.png" style="width: 100%;"/>
+<img src="https://imgur.com/jizn1Kj.png" style="width: 100%;"/>
 
 
 #### 4.2 Images Review Interface
@@ -108,23 +108,35 @@ By default, Visualization Results will show you results for all classes on image
 but you can easily analyse each specific class clicking by a cell of Matrix.
 Matched Pixels will be highlighted as green, unmatched — as red.
 
-<img src="https://imgur.com/RwWGq9S.png" style="width: 100%;"/>
-
-
-# How To Run
+<img src="https://imgur.com/e3EFXul.png" style="width: 100%;"/>
 
 
 # Demo Data
 
 You can use demo data to test Semantic Segmentation Metrics application:
 
-- [PascalVOC GT Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal_sample_gt) — Ground Thruth example project    
-    <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal_sample_gt" src="https://i.imgur.com/wYPHUJ0.png" width="350px"/>  
+- [PascalVOC GT Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal-sample-gt-masks) — Ground Truth example project    
+    <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal-sample-gt-masks" src="https://imgur.com/DGxDVPM.png" width="350px"/>  
   
-- [PascalVOC PRED Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal_sample_gt) — Predictions-Labeled example project 
-    <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal_sample_gt" src="https://i.imgur.com/wYPHUJ0.png" width="350px"/>
+- [PascalVOC PRED Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal-sample-pred-masks) — Predictions-Labeled example project 
+    <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal-sample-pred-masks" src="https://imgur.com/cXpdC7Q.png" width="350px"/>
+
+
+
+# How To Run
+
+
+1. Prepare **GT Project** and **PRED Project**, you can use <a href="#demo-data">demo data</a> for test try.<br>
+
+2. Add [Semantic Segmentation Metrics](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard) application to your Team
+
+<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/semantic-segmentation-metrics-dashboard" src="https://imgur.com/nk3Jn1a.png" width="350px">
+
+3. Launch from Plugin && Apps menu
+<img src="https://imgur.com/gASXNPY.png" style="width: 100%;"/>
+
 
 
 # Screenshot
 
-<img src="https://imgur.com/6fs29A4.png" style="width: 100%;"/>
+<img src="https://imgur.com/ZNeRxYI.png" style="width: 100%;"/>
