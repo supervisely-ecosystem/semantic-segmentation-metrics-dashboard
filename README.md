@@ -118,10 +118,10 @@ Matched Pixels will be highlighted as green, unmatched — as red.
 
 You can use demo data to test Semantic Segmentation Metrics application:
 
-- [PascalVOC GT (Sample)](https://ecosystem.supervise.ly/projects/pascal_sample_gt) — Ground Thruth example project    
+- [PascalVOC GT Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal_sample_gt) — Ground Thruth example project    
     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal_sample_gt" src="https://i.imgur.com/wYPHUJ0.png" width="350px"/>  
   
-- [PascalVOC PRED (Sample)](https://ecosystem.supervise.ly/projects/pascal_sample_gt) — Predictions-Labeled example project 
+- [PascalVOC PRED Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal_sample_gt) — Predictions-Labeled example project 
     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal_sample_gt" src="https://i.imgur.com/wYPHUJ0.png" width="350px"/>
 
 
