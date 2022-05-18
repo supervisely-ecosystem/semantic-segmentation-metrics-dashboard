@@ -39,7 +39,7 @@ Application key points:
     - for each image
 - Does not change the original projects
 - Automatically converts Projects to Semantic Segmentation task 
-- Label all unlabeled pixels as background (`__bg__`) automatically 
+- Automatically labels all unlabeled pixels as background (`__bg__`)  
 
 
 # Usage
