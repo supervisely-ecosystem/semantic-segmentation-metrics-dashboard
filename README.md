@@ -105,7 +105,7 @@ Click on a row to open Visualization Results for item.
 Visualization Results allows you to see the difference between GT and PRED masks.
 
 By default, Visualization Results will show you results for all classes on images,  
-but you can easily analyse each specific class clicking by a cell of Matrix.
+but you can easily analyse each specific class clicking by a cell of Matrix.  
 Matched Pixels will be highlighted as green, unmatched — as red.
 
 <img src="https://imgur.com/e3EFXul.png" style="width: 100%;"/>
@@ -116,9 +116,9 @@ Matched Pixels will be highlighted as green, unmatched — as red.
 You can use demo data to test Semantic Segmentation Metrics application:
 
 - [PascalVOC GT Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal-sample-gt-masks) — Ground Truth example project    
-    <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal-sample-gt-masks" src="https://imgur.com/DGxDVPM.png" width="350px"/>  
+    <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal-sample-gt-masks" src="https://imgur.com/DGxDVPM.png" width="350px"/>    
   
-- [PascalVOC PRED Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal-sample-pred-masks) — Predictions-Labeled example project 
+- [PascalVOC PRED Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal-sample-pred-masks) — Predictions-Labeled example project   
     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal-sample-pred-masks" src="https://imgur.com/cXpdC7Q.png" width="350px"/>
 
 
