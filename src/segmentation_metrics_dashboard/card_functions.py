@@ -252,7 +252,11 @@ def get_images_table_content():
                 mean_iou = '-'
 
             for class_name in selected_classes_names:
-                scores_per_class[f'{class_name} IoU'] = scores_per_class.pop(class_name)
+                value = scores_per_class.pop(class_name)
+                if value is not None:
+                    value = round(value, 3)
+
+                scores_per_class[f'{class_name} IoU'] = value
 
             gt_image_url = g.api.image.url(team_id=g.TEAM_ID,
                                            workspace_id=g.gt_project['workspace_id'],
