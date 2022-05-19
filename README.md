@@ -130,7 +130,7 @@ You can use demo data to test Semantic Segmentation Metrics application:
 
 2. Add [Semantic Segmentation Metrics](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard) application to your Team
 
-<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/semantic-segmentation-metrics-dashboard" src="https://imgur.com/ryuh6lk.png" width="350px">
+<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/semantic-segmentation-metrics-dashboard" src="https://imgur.com/ryuh6lk.png" width="350px"/>
 
 3. Launch from Plugin && Apps menu
 <img src="https://imgur.com/Vrfquix.png" style="width: 100%;"/>
