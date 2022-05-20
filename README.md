@@ -108,7 +108,7 @@ By default, Visualization Results will show you results for all classes on image
 but you can easily analyse each specific class clicking by a cell of Matrix.  
 Matched Pixels will be highlighted as green, unmatched — as red.
 
-<img src="https://imgur.com/e3EFXul.png" style="width: 100%;"/>
+<img src="https://imgur.com/y0Pzi9a.png" style="width: 100%;"/>
 
 
 # Demo Data
