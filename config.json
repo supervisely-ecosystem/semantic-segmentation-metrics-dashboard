@@ -1,22 +1,20 @@
 {
-    "name": "Semantic Segmentation Metrics",
-    "type": "app",
-    "version": "2.0.0",
-    "categories": [
-      "neural network",
-      "performance",
-      "semantic segmentation",
-      "quality assurance"
-    ],
-    "description": "interactive metrics analysis",
-    "docker_image": "supervisely/base-py-branched:1.0.1",
-    "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
-    "port": 8000,
-    "task_location": "workspace_tasks",
-    "icon_background": "#FFFFFF",
-
-    "icon": "https://imgur.com/OIxocae.png",
-    "icon_cover": false,
-
-    "instance_version": "6.4.49"
+  "name": "Semantic Segmentation Metrics",
+  "type": "app",
+  "version": "2.0.0",
+  "categories": [
+    "neural network",
+    "images",
+    "semantic segmentation",
+    "nn tools"
+  ],
+  "description": "interactive metrics analysis",
+  "docker_image": "supervisely/base-py-branched:1.0.1",
+  "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
+  "port": 8000,
+  "task_location": "workspace_tasks",
+  "icon_background": "#FFFFFF",
+  "icon": "https://imgur.com/OIxocae.png",
+  "icon_cover": false,
+  "instance_version": "6.4.49"
 }
