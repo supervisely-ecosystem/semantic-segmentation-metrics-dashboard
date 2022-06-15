@@ -9,12 +9,12 @@
     "nn tools"
   ],
   "description": "interactive metrics analysis",
-  "docker_image": "supervisely/base-py-sdk:6.18.1",
+  "docker_image": "supervisely/base-py-sdk:6.23.1",
+  "instance_version": "6.4.57",
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
   "port": 8000,
   "task_location": "workspace_tasks",
   "icon_background": "#FFFFFF",
   "icon": "https://imgur.com/OIxocae.png",
-  "icon_cover": false,
-  "instance_version": "6.4.49"
+  "icon_cover": false
 }
