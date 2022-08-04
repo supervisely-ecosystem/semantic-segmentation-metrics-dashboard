@@ -16,8 +16,8 @@
 [![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervise.ly/slack)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)
-[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)](https://supervise.ly)
-[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)](https://supervise.ly)
+[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/semantic-segmentation-metrics-dashboard.png)](https://supervise.ly)
+[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/semantic-segmentation-metrics-dashboard.png)](https://supervise.ly)
 
 </div>
 
