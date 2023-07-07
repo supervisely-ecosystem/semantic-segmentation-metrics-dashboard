@@ -15,6 +15,6 @@
   "port": 8000,
   "task_location": "workspace_tasks",
   "icon_background": "#FFFFFF",
-  "icon": "https://imgur.com/OIxocae.png",
+  "icon": "media/icon.png",
   "icon_cover": false
 }
