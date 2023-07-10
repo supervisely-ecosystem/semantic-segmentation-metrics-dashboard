@@ -6,7 +6,7 @@
   <sly-el-table-selection-container
     :data="data.classes_table_content"
     :selected="state.selectedClasses"
-    :identity="(row) => state.selectedDatasets.includes(row.left.name)"
+    :identity="(row) => state.selectedClasses.includes(row.left.name)"
   >
     <el-table
       ref="sly-el-table-with-selection"
