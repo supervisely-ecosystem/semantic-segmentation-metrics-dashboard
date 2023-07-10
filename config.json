@@ -9,7 +9,7 @@
     "nn tools"
   ],
   "description": "interactive metrics analysis",
-  "docker_image": "supervisely/base-py-sdk:6.72.56",
+  "docker_image": "supervisely/base-py-sdk:6.72.66",
   "instance_version": "6.4.61",
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
   "port": 8000,
