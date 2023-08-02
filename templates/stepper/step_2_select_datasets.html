@@ -1,83 +1,137 @@
-<sly-card title="Select Datasets" subtitle="select datasets to calculate metrics on"
-          :disabled="{disabled: data.current_step < 2, message: 'complete previous step to unlock'}"
+<sly-card
+  title="Select Datasets"
+  subtitle="select datasets to calculate metrics on"
+  :disabled="{disabled: data.current_step < 2, message: 'complete previous step to unlock'}"
 >
-    <div slot="header">
-        <div style="margin-bottom: 5px; text-align: right">
-            <div class="">
-                <span style="color: green"><i class="zmdi zmdi-check mr5"
-                                              style="width: 15px; display: inline-block"></i>matched</span>
-                — images have same names and hashes
-            </div>
+  <div slot="header">
+    <div style="margin-bottom: 5px; text-align: right">
+      <div class="">
+        <span style="color: green"
+          ><i
+            class="zmdi zmdi-check mr5"
+            style="width: 15px; display: inline-block"
+          ></i
+          >matched</span
+        >
+        — images have same names and hashes
+      </div>
 
-            <div class="">
-            <span style="color: #20a0ff"><i class="zmdi zmdi-plus-circle-o mr5"
-                                            style="width: 15px; display: inline-block"></i>unique</span>
-                — images have different names or hashes
-            </div>
-            <div class="">
-            <span style="color: #ff0000"><i class="zmdi zmdi-close mr5"
-                                            style="width: 15px; display: inline-block"></i>unmatched</span>
-                — datasets don't match at all
-            </div>
-        </div>
+      <div class="">
+        <span style="color: #20a0ff"
+          ><i
+            class="zmdi zmdi-plus-circle-o mr5"
+            style="width: 15px; display: inline-block"
+          ></i
+          >unique</span
+        >
+        — images have different names or hashes
+      </div>
+      <div class="">
+        <span style="color: #ff0000"
+          ><i
+            class="zmdi zmdi-close mr5"
+            style="width: 15px; display: inline-block"
+          ></i
+          >unmatched</span
+        >
+        — datasets don't match at all
+      </div>
     </div>
+  </div>
 
-    <el-table class="ultra-table"
-              :data="data.datasets_table_content"
-
-              style="width: 100%; max-height: 400px; overflow-y: scroll"
-              default-sort="{prop: 'statuses.numbers', order: 'descending'}"
-              @selection-change="
+  <sly-el-table-selection-container
+    :data="data.datasets_table_content"
+    :selected="state.selectedDatasets"
+    :identity="(row) => state.selectedDatasets.includes(row.left.name)"
+  >
+    <el-table
+      ref="sly-el-table-with-selection"
+      class="ultra-table"
+      :data="data.datasets_table_content"
+      style="width: 100%; max-height: 400px; overflow-y: scroll"
+      default-sort="{prop: 'statuses.numbers', order: 'descending'}"
+      @selection-change="
                 (val) => {
                     state.selectedDatasets = val.map(x => x.left.name);
                     post('/apply_changes/');
                 }
-                ">
-        <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column sortable prop="left.name" :label="`GT Datasets`">
-            <template scope="scope">
-                <div v-if="scope.row.left.name.length > 0">
-                    <i class="zmdi zmdi-collection-image-o"></i>
-                    <span class="ml5 mr10">{{ scope.row.left.name }}</span>
-                    <span style="color: #7f858e;">
-                            <i class="zmdi zmdi-equalizer"></i> {{ scope.row.left.count }} images
-                        </span>
-                </div>
-            </template>
-        </el-table-column>
-        <el-table-column sortable prop="statuses.numbers" align="center" label="Comparison Result">
-            <template scope="scope">
-                <div v-for="(count, index) in scope.row.statuses.numbers">
-                    <div v-if="count !== 0">
-                        <div style="margin: 3px 0" :style="{color: scope.row.statuses.colors[index]}">
-                                <span style="width: 25px; display: inline-block">
-                                    <i v-for="icon in scope.row.statuses.icons[index]" :class="icon"></i>
-                                </span>
-                            <span>
-                                    {{scope.row.statuses.messages[index]}} <span v-if="count > 0">({{count}} images)</span>
-                                </span>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </el-table-column>
-        <el-table-column sortable align="right" prop="right.name" :label="`PRED Datasets`">
-            <template scope="scope">
-                <div v-if="scope.row.right.name.length > 0">
-                    <i class="zmdi zmdi-collection-image-o"></i>
-                    <span class="ml5 mr10">{{ scope.row.right.name }}</span>
-                    <span style="color: #7f858e;">
-                            <i class="zmdi zmdi-equalizer"></i> {{ scope.row.right.count }} images
-                        </span>
-                </div>
-            </template>
-        </el-table-column>
+                "
+    >
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column sortable prop="left.name" :label="`GT Datasets`">
+        <template scope="scope">
+          <div v-if="scope.row.left.name.length > 0">
+            <i class="zmdi zmdi-collection-image-o"></i>
+            <span class="ml5 mr10">{{ scope.row.left.name }}</span>
+            <span style="color: #7f858e">
+              <i class="zmdi zmdi-equalizer"></i> {{ scope.row.left.count }}
+              images
+            </span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        sortable
+        prop="statuses.numbers"
+        align="center"
+        label="Comparison Result"
+      >
+        <template scope="scope">
+          <div v-for="(count, index) in scope.row.statuses.numbers">
+            <div v-if="count !== 0">
+              <div
+                style="margin: 3px 0"
+                :style="{color: scope.row.statuses.colors[index]}"
+              >
+                <span style="width: 25px; display: inline-block">
+                  <i
+                    v-for="icon in scope.row.statuses.icons[index]"
+                    :class="icon"
+                  ></i>
+                </span>
+                <span>
+                  {{scope.row.statuses.messages[index]}}
+                  <span v-if="count > 0">({{count}} images)</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        sortable
+        align="right"
+        prop="right.name"
+        :label="`PRED Datasets`"
+      >
+        <template scope="scope">
+          <div v-if="scope.row.right.name.length > 0">
+            <i class="zmdi zmdi-collection-image-o"></i>
+            <span class="ml5 mr10">{{ scope.row.right.name }}</span>
+            <span style="color: #7f858e">
+              <i class="zmdi zmdi-equalizer"></i> {{ scope.row.right.count }}
+              images
+            </span>
+          </div>
+        </template>
+      </el-table-column>
     </el-table>
-    <div style="display:flex; flex-direction:column; margin: 0 5px; margin-top: 15px">
-        <div v-if="data.current_step < 3">{{{ select_datasets_button.to_html() }}}</div>
-        <div v-else>{{{ reselect_datasets_button.to_html() }}}</div>
-
-        <div v-if="data.current_step > 2" style="margin-top: 17px">{{{ ds_done_label.to_html() }}}</div>
-
+  </sly-el-table-selection-container>
+  <div
+    style="
+      display: flex;
+      flex-direction: column;
+      margin: 0 5px;
+      margin-top: 15px;
+    "
+  >
+    <div v-if="data.current_step < 3">
+      {{{ select_datasets_button.to_html() }}}
     </div>
+    <div v-else>{{{ reselect_datasets_button.to_html() }}}</div>
+
+    <div v-if="data.current_step > 2" style="margin-top: 17px">
+      {{{ ds_done_label.to_html() }}}
+    </div>
+  </div>
 </sly-card>
