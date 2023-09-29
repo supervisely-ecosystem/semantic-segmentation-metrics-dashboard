@@ -160,7 +160,7 @@ def get_stats_tables_content():
         # per datasets
         if len(classname2matched.values()) > 0:
             stats_by_datasets[ds_name]['accuracy'] = round(
-                sum(classname2matched.values()) / len(classname2matched.values()), 3)
+                float(sum(classname2matched.values()) / len(classname2matched.values())), 3)
             stats_by_datasets[ds_name]['matched'] = len(matched_images_in_dataset)
 
     # collecting iou
@@ -173,7 +173,7 @@ def get_stats_tables_content():
             for class_name_on_image, class_score in current_image.items():
                 scores_by_classes_in_dataset[class_name_on_image].append(class_score)
 
-        classname2score = {class_name: round(sum(scores_list) / len(scores_list), 3) for class_name, scores_list in
+        classname2score = {class_name: round(float(sum(scores_list) / len(scores_list)), 3) for class_name, scores_list in
                            scores_by_classes_in_dataset.items() if len(scores_list) > 0}
 
         for class_name, class_score in classname2score.items():
@@ -181,8 +181,7 @@ def get_stats_tables_content():
 
         # per datasets
         if len(classname2score.values()) > 0:
-            stats_by_datasets[ds_name]['mean iou'] = round(
-                sum(classname2score.values()) / len(classname2score.values()), 3)
+            stats_by_datasets[ds_name]['mean iou'] = round(float(sum(classname2score.values() / len(classname2score.values()))), 3)
 
     # collecting images nums
     update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets,
@@ -195,8 +194,8 @@ def get_stats_tables_content():
         for score_key in ['accuracy', 'mean iou']:
             if len(stats_by_class_names[class_name][score_key]) > 0:
                 stats_by_class_names[class_name][score_key] = \
-                    round(sum(stats_by_class_names[class_name][score_key]) / len(
-                        stats_by_class_names[class_name][score_key]), 3)
+                    round(float(sum(stats_by_class_names[class_name][score_key]) / len(
+                        stats_by_class_names[class_name][score_key])), 3)
             else:
                 stats_by_class_names[class_name][score_key] = '-'
 
@@ -237,7 +236,7 @@ def get_images_table_content():
         for item_name in matched_items_names:
             pixels_matches = g.pixels_matches.get(ds_name, {}).get(item_name)
             if pixels_matches is not None:
-                accuracy = round(g.images_accuracy[ds_name][item_name], 3)
+                accuracy = round(float(g.images_accuracy[ds_name][item_name]), 3)
             else:
                 accuracy = '-'
 
@@ -246,7 +245,7 @@ def get_images_table_content():
             scores_per_class = {class_name: None for class_name in selected_classes_names}
 
             if iou_scores is not None:
-                mean_iou = round(sum(list(iou_scores.values())) / len(iou_scores), 3)
+                mean_iou = round(float(sum(list(iou_scores.values())) / len(iou_scores)), 3)
                 scores_per_class.update(iou_scores)
             else:
                 mean_iou = '-'
@@ -254,7 +253,7 @@ def get_images_table_content():
             for class_name in selected_classes_names:
                 value = scores_per_class.pop(class_name)
                 if value is not None:
-                    value = round(value, 3)
+                    value = round(float(value), 3)
 
                 scores_per_class[f'{class_name} IoU'] = value
 
