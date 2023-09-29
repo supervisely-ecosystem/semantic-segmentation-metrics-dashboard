@@ -51,7 +51,7 @@ def get_matched_pixels_matrix_for_image(current_image, classes_names):
 
             # sum_of_row = sum(list(row.values()))
             # row = [round((row[class_name] / sum_of_row), 3) for class_name in classes_names]
-            row = [round((row[class_name]), 5) for class_name in classes_names]
+            row = [round(float(row[class_name]), 5) for class_name in classes_names]
             data[row_index] = row
         else:
             data[row_index] = []
