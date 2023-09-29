@@ -9,12 +9,13 @@
     "nn tools"
   ],
   "description": "interactive metrics analysis",
-  "docker_image": "supervisely/base-py-sdk:6.35.0",
+  "docker_image": "supervisely/sem-seg-metrics:1.0.0",
   "instance_version": "6.4.61",
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
   "port": 8000,
   "task_location": "workspace_tasks",
   "icon_background": "#FFFFFF",
   "icon": "https://imgur.com/OIxocae.png",
-  "icon_cover": false
+  "icon_cover": false,
+  "gpu": "preferred"
 }

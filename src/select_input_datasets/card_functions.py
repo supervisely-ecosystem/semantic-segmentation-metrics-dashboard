@@ -1,4 +1,8 @@
-import numpy
+import torch
+if torch.cuda.is_available():
+    import cupy as np
+else:
+    import numpy as np
 
 import src.sly_functions as f
 import src.sly_globals as g
@@ -27,7 +31,7 @@ def update_objects_info(objects_info, image_annotation):
         objects_info[object_on_image.name]['count'] += 1
         # objects_info[object_on_image.name]['area'] += labels_area
 
-    objects_info['images_area'] = objects_info.get('images_area', 0) + numpy.prod(image_annotation.img_size)
+    objects_info['images_area'] = objects_info.get('images_area', 0) + np.prod(image_annotation.img_size)
 
 
 def update_matched_info(matched_objects_info, gt_image_annotation, pred_image_annotation):
