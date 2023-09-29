@@ -94,14 +94,14 @@ def get_mask_with_colors_mapping(annotation):
 def get_size_of_gt_mask_union(gt_mask, pred_mask, gt_color, pred_color):
     if pred_color is not None:
         # pred_interest = np.asarray(pred_mask == pred_color).all(-1)
-        pred_interest = np.asarray(pred_mask == pred_color)
+        pred_interest = np.asarray(pred_mask == np.array(pred_color))
         pred_interest = np.all(pred_interest, -1)
     else:
         pred_interest = np.zeros(gt_mask.shape)
 
     if gt_color is not None:
         # gt_interest = np.asarray(gt_mask == gt_color).all(-1)
-        gt_interest = np.asarray(gt_mask == gt_color)
+        gt_interest = np.asarray(gt_mask == np.array(gt_color))
         gt_interest = np.all(gt_interest, -1)
     else:
         gt_interest = np.zeros(pred_mask.shape)
@@ -112,7 +112,7 @@ def get_size_of_gt_mask_union(gt_mask, pred_mask, gt_color, pred_color):
 def get_gt_mask_class(gt_mask, gt_color):
     if gt_color is not None:
         # gt_interest = np.asarray(gt_mask == gt_color).all(-1)
-        gt_interest = np.asarray(gt_mask == gt_color)
+        gt_interest = np.asarray(gt_mask == np.array(gt_color))
         gt_interest = np.all(gt_interest, -1)
     else:
         gt_interest = np.zeros(gt_mask.shape)
