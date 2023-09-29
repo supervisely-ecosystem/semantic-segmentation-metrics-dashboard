@@ -165,10 +165,10 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
 
             else:  # if object appears on GT && PRED mask (both)
                 # gt_pixels_of_interest = np.asarray(gt_mask == gt_color_mapping[gt_class_name]).all(-1)
-                gt_pixels_of_interest = np.asarray(gt_mask == gt_color_mapping[gt_class_name])
+                gt_pixels_of_interest = np.asarray(gt_mask == np.array(gt_color_mapping[gt_class_name]))
                 gt_pixels_of_interest = np.all(gt_pixels_of_interest, -1)
                 # pred_pixels_of_interest = np.asarray(pred_mask == pred_color_mapping[pred_class_name]).all(-1)
-                pred_pixels_of_interest = np.asarray(pred_mask == pred_color_mapping[pred_class_name])
+                pred_pixels_of_interest = np.asarray(pred_mask == np.array(pred_color_mapping[pred_class_name]))
                 pred_pixels_of_interest = np.all(pred_pixels_of_interest, -1)
 
                 matched_mask = np.logical_and(pred_pixels_of_interest, class_union_mask)
