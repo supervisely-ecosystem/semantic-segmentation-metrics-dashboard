@@ -14,10 +14,12 @@ import src.segmentation_metrics_dashboard.card_widgets as seg_widgets
 
 import src.select_input_classes.card_widgets as card_widgets
 import src.select_input_classes.card_functions as card_functions
+import time
 
 
 @card_widgets.select_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
 def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.app.StateJson.from_request)):
+    total_start_time = time.time()
     selected_classes_names = set(state['selectedClasses'])
     selected_classes_names = list(set(selected_classes_names).intersection(set(DataJson()['allowed_classes_names'])))
 
@@ -33,8 +35,11 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     card_functions.apply_classes_to_projects(selected_classes_names)
     card_functions.filter_matched_items_by_classes(selected_classes_names)
 
+    scores_start_time = time.time()
     card_functions.calculate_scores_tables(gt_project_dir=g.gt_project_dir_converted,
                                            pred_project_dir=g.pred_project_dir_converted)
+    scores_end_time = time.time()
+    print(f"Total calculate_scores_tables function execution time: {scores_end_time - scores_start_time} seconds")
 
     DataJson()['general_metrics']['accuracy']['value'] = round(seg_functions.calculate_general_pixel_accuracy(), 3)
     DataJson()['general_metrics']['iou']['value'] = round(seg_functions.calculate_general_mean_iou(), 3)
@@ -66,6 +71,10 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
 
     run_sync(state.synchronize_changes())
     run_sync(DataJson().synchronize_changes())
+    total_end_time = time.time()
+    print(f"Total select_input_classes function execution time: {total_end_time - total_start_time} seconds")
+    percent = round(((scores_end_time - scores_start_time) / (total_end_time - total_start_time)) * 100, 2)
+    print(f"Execution of function calculate_scores_tables takes {percent} % of time for execution of function select_input_classes")
 
 
 @card_widgets.reselect_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
