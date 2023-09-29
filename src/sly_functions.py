@@ -3,6 +3,7 @@ import os
 import cv2
 import torch
 if torch.cuda.is_available():
+    import numpy
     import cupy as np
 else:
     import numpy as np
@@ -125,7 +126,7 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
     gt_mask, gt_color_mapping = get_mask_with_colors_mapping(gt_ann)
     pred_mask, pred_color_mapping = get_mask_with_colors_mapping(pred_ann)
 
-    img_size = np.prod(gt_ann.img_size[:2])
+    img_size = numpy.prod(gt_ann.img_size[:2])
     image_intersected_pixels_num = 0
 
     for gt_class_name in selected_classes_names:
