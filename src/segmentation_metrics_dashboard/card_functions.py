@@ -181,7 +181,7 @@ def get_stats_tables_content():
 
         # per datasets
         if len(classname2score.values()) > 0:
-            stats_by_datasets[ds_name]['mean iou'] = round(float(sum(classname2score.values() / len(classname2score.values()))), 3)
+            stats_by_datasets[ds_name]['mean iou'] = round(float(sum(list(classname2score.values()) / len(classname2score.values()))), 3)
 
     # collecting images nums
     update_class_items_stats_for_project(g.gt_project_dir_converted, stats_by_class_names, stats_by_datasets,
