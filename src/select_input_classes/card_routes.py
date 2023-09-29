@@ -44,6 +44,8 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     scores_end_time = time.time()
     print(f"Total calculate_scores_tables function execution time: {scores_end_time - scores_start_time} seconds")
 
+    print(seg_functions.calculate_general_pixel_accuracy())
+    print(int(seg_functions.calculate_general_pixel_accuracy()))
     DataJson()['general_metrics']['accuracy']['value'] = round(seg_functions.calculate_general_pixel_accuracy(), 3)
     DataJson()['general_metrics']['iou']['value'] = round(seg_functions.calculate_general_mean_iou(), 3)
     seg_functions.colorize_metrics()
