@@ -2,11 +2,12 @@ import colorsys
 import copy
 
 from supervisely.app import DataJson
-import torch
-if torch.cuda.is_available():
-    import cupy as np
-else:
-    import numpy as np
+# import torch
+# if torch.cuda.is_available():
+#     import cupy as np
+# else:
+#     import numpy as np
+import numpy as np
 import pandas as pd
 
 import supervisely

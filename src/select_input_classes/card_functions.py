@@ -2,8 +2,6 @@ import copy
 import os
 import time
 
-import numpy as np
-
 import supervisely
 import src.sly_globals as g
 import src.sly_functions as f

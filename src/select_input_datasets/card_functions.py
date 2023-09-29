@@ -1,8 +1,9 @@
-import torch
-if torch.cuda.is_available():
-    import cupy as np
-else:
-    import numpy as np
+# import torch
+# if torch.cuda.is_available():
+#     import cupy as np
+# else:
+#     import numpy as np
+import numpy as np
 
 import src.sly_functions as f
 import src.sly_globals as g

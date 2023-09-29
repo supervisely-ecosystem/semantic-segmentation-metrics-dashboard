@@ -1,11 +1,12 @@
 import os
 
 import cv2
-import torch
-if torch.cuda.is_available():
-    import cupy as np
-else:
-    import numpy as np
+# import torch
+# if torch.cuda.is_available():
+#     import cupy as np
+# else:
+#     import numpy as np
+import numpy as np
 
 import supervisely
 
