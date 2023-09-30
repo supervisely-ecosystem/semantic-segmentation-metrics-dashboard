@@ -14,10 +14,12 @@ import src.segmentation_metrics_dashboard.card_widgets as seg_widgets
 
 import src.select_input_classes.card_widgets as card_widgets
 import src.select_input_classes.card_functions as card_functions
+import time
 
 
 @card_widgets.select_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
 def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.app.StateJson.from_request)):
+    total_start_time = time.time()
     selected_classes_names = set(state['selectedClasses'])
     selected_classes_names = list(set(selected_classes_names).intersection(set(DataJson()['allowed_classes_names'])))
 
@@ -66,6 +68,9 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
 
     run_sync(state.synchronize_changes())
     run_sync(DataJson().synchronize_changes())
+    total_end_time = time.time()
+    print("---CPU only version---")
+    print(f"Total select_input_classes function execution time: {total_end_time - total_start_time} seconds")
 
 
 @card_widgets.reselect_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
