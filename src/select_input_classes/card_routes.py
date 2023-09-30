@@ -32,17 +32,11 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
 
     DataJson()['selected_classes_names'] = selected_classes_names
 
-    apply_start_time = time.time()
     card_functions.apply_classes_to_projects(selected_classes_names)
-    apply_end_time = time.time()
-    print(f"Total apply_classes_to_projects function execution time: {apply_end_time - apply_start_time} seconds")
     card_functions.filter_matched_items_by_classes(selected_classes_names)
 
-    scores_start_time = time.time()
     card_functions.calculate_scores_tables(gt_project_dir=g.gt_project_dir_converted,
                                            pred_project_dir=g.pred_project_dir_converted)
-    scores_end_time = time.time()
-    print(f"Total calculate_scores_tables function execution time: {scores_end_time - scores_start_time} seconds")
 
     DataJson()['general_metrics']['accuracy']['value'] = round(float(seg_functions.calculate_general_pixel_accuracy()), 3)
     DataJson()['general_metrics']['iou']['value'] = round(float(seg_functions.calculate_general_mean_iou()), 3)
@@ -75,11 +69,8 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     run_sync(state.synchronize_changes())
     run_sync(DataJson().synchronize_changes())
     total_end_time = time.time()
+    print("---GPU version (cupy)---")
     print(f"Total select_input_classes function execution time: {total_end_time - total_start_time} seconds")
-    percent_scores = round(((scores_end_time - scores_start_time) / (total_end_time - total_start_time)) * 100, 2)
-    print(f"Execution of function calculate_scores_tables takes {percent_scores} % of time for execution of function select_input_classes")
-    percent_apply = round(((apply_end_time - apply_start_time) / (total_end_time - total_start_time)) * 100, 2)
-    print(f"Execution of function apply_classes_to_projects takes {percent_apply} % of time for execution of function select_input_classes")
 
 
 @card_widgets.reselect_classes_button.add_route(app=g.app, route=ElementButton.Routes.BUTTON_CLICKED)
