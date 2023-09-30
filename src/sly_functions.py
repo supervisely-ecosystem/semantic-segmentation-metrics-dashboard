@@ -118,67 +118,66 @@ def get_gt_mask_class(gt_mask, gt_color):
 
 
 def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: supervisely.Annotation, ds_name, item_name):
-    with np.cuda.Device(0):
-        g.pixels_matches.setdefault(ds_name, {}).setdefault(item_name, {})
-        g.iou_scores.setdefault(ds_name, {}).setdefault(item_name, {})
+    g.pixels_matches.setdefault(ds_name, {}).setdefault(item_name, {})
+    g.iou_scores.setdefault(ds_name, {}).setdefault(item_name, {})
 
-        db_pixels_matches = g.pixels_matches[ds_name][item_name]
-        db_iou_scores = g.iou_scores[ds_name][item_name]
+    db_pixels_matches = g.pixels_matches[ds_name][item_name]
+    db_iou_scores = g.iou_scores[ds_name][item_name]
 
-        selected_classes_names = DataJson()['selected_classes_names']
+    selected_classes_names = DataJson()['selected_classes_names']
 
-        gt_mask, gt_color_mapping = get_mask_with_colors_mapping(gt_ann)
-        pred_mask, pred_color_mapping = get_mask_with_colors_mapping(pred_ann)
+    gt_mask, gt_color_mapping = get_mask_with_colors_mapping(gt_ann)
+    pred_mask, pred_color_mapping = get_mask_with_colors_mapping(pred_ann)
 
-        img_size = numpy.prod(gt_ann.img_size[:2])
-        image_intersected_pixels_num = 0
+    img_size = numpy.prod(gt_ann.img_size[:2])
+    image_intersected_pixels_num = 0
 
-        for gt_class_name in selected_classes_names:
-            class_union_mask = get_gt_mask_class(gt_mask, gt_color_mapping.get(gt_class_name))
-            if np.sum(class_union_mask) == 0:  # class not exists on both pixels
+    for gt_class_name in selected_classes_names:
+        class_union_mask = get_gt_mask_class(gt_mask, gt_color_mapping.get(gt_class_name))
+        if np.sum(class_union_mask) == 0:  # class not exists on both pixels
+            continue
+
+        db_pixels_matches.setdefault(gt_class_name, {})
+
+        gt_color = gt_color_mapping.get(gt_class_name)
+        for pred_class_name in selected_classes_names:
+            pred_color = pred_color_mapping.get(pred_class_name)
+
+            if gt_color is None and pred_color is None:  # if object is absent on GT && PRED masks (both)
                 continue
 
-            db_pixels_matches.setdefault(gt_class_name, {})
-
-            gt_color = gt_color_mapping.get(gt_class_name)
-            for pred_class_name in selected_classes_names:
-                pred_color = pred_color_mapping.get(pred_class_name)
-
-                if gt_color is None and pred_color is None:  # if object is absent on GT && PRED masks (both)
-                    continue
-
-                elif gt_color is not None and pred_color is None:  # if object appears on GT mask only
+            elif gt_color is not None and pred_color is None:  # if object appears on GT mask only
+                db_pixels_matches[gt_class_name][pred_class_name] = 0
+                if gt_class_name == pred_class_name:
+                    db_iou_scores[gt_class_name] = 0
                     db_pixels_matches[gt_class_name][pred_class_name] = 0
-                    if gt_class_name == pred_class_name:
-                        db_iou_scores[gt_class_name] = 0
-                        db_pixels_matches[gt_class_name][pred_class_name] = 0
-                    continue
+                continue
 
-                elif gt_color is None and pred_color is not None:  # if object appears on PRED mask only
-                    db_pixels_matches[gt_class_name][pred_class_name] = 0
-                    if gt_class_name == pred_class_name:
-                        db_iou_scores[gt_class_name] = 0
-                    continue
+            elif gt_color is None and pred_color is not None:  # if object appears on PRED mask only
+                db_pixels_matches[gt_class_name][pred_class_name] = 0
+                if gt_class_name == pred_class_name:
+                    db_iou_scores[gt_class_name] = 0
+                continue
 
-                else:  # if object appears on GT && PRED mask (both)
-                    gt_pixels_of_interest = np.asarray(gt_mask == np.array(gt_color_mapping[gt_class_name]))
-                    gt_pixels_of_interest = np.all(gt_pixels_of_interest, -1)
-                    pred_pixels_of_interest = np.asarray(pred_mask == np.array(pred_color_mapping[pred_class_name]))
-                    pred_pixels_of_interest = np.all(pred_pixels_of_interest, -1)
+            else:  # if object appears on GT && PRED mask (both)
+                gt_pixels_of_interest = np.asarray(gt_mask == np.array(gt_color_mapping[gt_class_name]))
+                gt_pixels_of_interest = np.all(gt_pixels_of_interest, -1)
+                pred_pixels_of_interest = np.asarray(pred_mask == np.array(pred_color_mapping[pred_class_name]))
+                pred_pixels_of_interest = np.all(pred_pixels_of_interest, -1)
 
-                    matched_mask = np.logical_and(pred_pixels_of_interest, class_union_mask)
-                    db_pixels_matches[gt_class_name][pred_class_name] = np.sum(matched_mask) / np.sum(class_union_mask)
+                matched_mask = np.logical_and(pred_pixels_of_interest, class_union_mask)
+                db_pixels_matches[gt_class_name][pred_class_name] = np.sum(matched_mask) / np.sum(class_union_mask)
 
-                    if gt_class_name == pred_class_name:
-                        masks_intersection = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
-                        masks_union = np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest)
+                if gt_class_name == pred_class_name:
+                    masks_intersection = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
+                    masks_union = np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest)
 
-                        iou = np.sum(masks_intersection) / np.sum(masks_union)
-                        db_iou_scores[gt_class_name] = iou
+                    iou = np.sum(masks_intersection) / np.sum(masks_union)
+                    db_iou_scores[gt_class_name] = iou
 
-                        image_intersected_pixels_num += np.sum(masks_intersection)
+                    image_intersected_pixels_num += np.sum(masks_intersection)
 
-        g.images_accuracy.setdefault(ds_name, {})[item_name] = image_intersected_pixels_num / img_size
+    g.images_accuracy.setdefault(ds_name, {})[item_name] = image_intersected_pixels_num / img_size
 
 
 def get_image_link(project_dir, ds_name, item_name):
