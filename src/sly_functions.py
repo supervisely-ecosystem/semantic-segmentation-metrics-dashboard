@@ -180,7 +180,7 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
                     image_intersected_pixels_num += np.sum(masks_intersection)
     image_acc = image_intersected_pixels_num / img_size
     print(f"image_acc variable type: {type(image_acc)}")
-    g.images_accuracy.setdefault(ds_name, {})[item_name] = image_acc.get()
+    g.images_accuracy.setdefault(ds_name, {})[item_name] = float(image_acc.get())
 
 
 def get_image_link(project_dir, ds_name, item_name):
