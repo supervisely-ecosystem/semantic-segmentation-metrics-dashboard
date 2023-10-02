@@ -1,7 +1,12 @@
 import os
 
 import cv2
-import numpy as np
+import torch
+if torch.cuda.is_available():
+    import numpy
+    import cupy as np # gpu-compatible numpy analogue
+else:
+    import numpy as np
 
 import supervisely
 
@@ -83,17 +88,19 @@ def get_mask_with_colors_mapping(annotation):
         label.geometry.draw(mask, label_color)
         objname2color[label.obj_class.name] = tuple(label_color)
 
+    if torch.cuda.is_available(): # if using cupy
+        mask = mask.get()
     return mask, objname2color
 
 
 def get_size_of_gt_mask_union(gt_mask, pred_mask, gt_color, pred_color):
     if pred_color is not None:
-        pred_interest = np.asarray(pred_mask == pred_color).all(-1)
+        pred_interest = np.asarray(pred_mask == np.array(pred_color)).all(-1)
     else:
         pred_interest = np.zeros(gt_mask.shape)
 
     if gt_color is not None:
-        gt_interest = np.asarray(gt_mask == gt_color).all(-1)
+        gt_interest = np.asarray(gt_mask == np.array(gt_color)).all(-1)
     else:
         gt_interest = np.zeros(pred_mask.shape)
 
@@ -102,7 +109,7 @@ def get_size_of_gt_mask_union(gt_mask, pred_mask, gt_color, pred_color):
 
 def get_gt_mask_class(gt_mask, gt_color):
     if gt_color is not None:
-        gt_interest = np.asarray(gt_mask == gt_color).all(-1)
+        gt_interest = np.asarray(gt_mask == np.array(gt_color)).all(-1)
     else:
         gt_interest = np.zeros(gt_mask.shape)
 
@@ -121,7 +128,11 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
     gt_mask, gt_color_mapping = get_mask_with_colors_mapping(gt_ann)
     pred_mask, pred_color_mapping = get_mask_with_colors_mapping(pred_ann)
 
-    img_size = np.prod(gt_ann.img_size[:2])
+    if torch.cuda.is_available(): # if using cupy
+        gt_mask, pred_mask = np.asarray(gt_mask), np.asarray(pred_mask)
+        img_size = numpy.prod(gt_ann.img_size[:2])
+    else:
+        img_size = np.prod(gt_ann.img_size[:2])
     image_intersected_pixels_num = 0
 
     for gt_class_name in selected_classes_names:
@@ -153,22 +164,29 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
                 continue
 
             else:  # if object appears on GT && PRED mask (both)
-                gt_pixels_of_interest = np.asarray(gt_mask == gt_color_mapping[gt_class_name]).all(-1)
-                pred_pixels_of_interest = np.asarray(pred_mask == pred_color_mapping[pred_class_name]).all(-1)
+                gt_pixels_of_interest = np.asarray(gt_mask == np.array(gt_color_mapping[gt_class_name])).all(-1)
+                pred_pixels_of_interest = np.asarray(pred_mask == np.array(pred_color_mapping[pred_class_name])).all(-1)
 
                 matched_mask = np.logical_and(pred_pixels_of_interest, class_union_mask)
-                db_pixels_matches[gt_class_name][pred_class_name] = np.sum(matched_mask) / np.sum(class_union_mask)
+                pixel_match = np.sum(matched_mask) / np.sum(class_union_mask)
+                if torch.cuda.is_available(): # if using cupy
+                    pixel_match = float(pixel_match.get())
+                db_pixels_matches[gt_class_name][pred_class_name] = pixel_match
 
                 if gt_class_name == pred_class_name:
                     masks_intersection = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
                     masks_union = np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest)
 
                     iou = np.sum(masks_intersection) / np.sum(masks_union)
+                    if torch.cuda.is_available(): # if using cupy
+                        iou = float(iou.get())
                     db_iou_scores[gt_class_name] = iou
 
                     image_intersected_pixels_num += np.sum(masks_intersection)
-
-    g.images_accuracy.setdefault(ds_name, {})[item_name] = image_intersected_pixels_num / img_size
+    image_acc = image_intersected_pixels_num / img_size
+    if torch.cuda.is_available(): # if using cupy
+        image_acc = float(image_acc.get())
+    g.images_accuracy.setdefault(ds_name, {})[item_name] = image_acc
 
 
 def get_image_link(project_dir, ds_name, item_name):
