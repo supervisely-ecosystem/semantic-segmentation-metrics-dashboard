@@ -11,6 +11,7 @@ import src.sly_functions as f
 
 import src.segmentation_metrics_dashboard.card_widgets as card_widgets
 from supervisely.app.fastapi import run_sync
+import torch
 
 
 def calculate_general_pixel_accuracy():
@@ -322,7 +323,10 @@ def get_matches_annotation(gt_ann: supervisely.Annotation, pred_ann: supervisely
     gt_mask, gt_name2color = f.get_mask_with_colors_mapping(gt_ann)
     pred_mask, pred_name2color = f.get_mask_with_colors_mapping(pred_ann)
 
-    gt_mask, pred_mask = np.asarray(gt_mask), np.asarray(pred_mask)
+    if torch.cuda.is_available():
+        gt_mask, pred_mask = gt_mask.get(), pred_mask.get()
+    else:
+        gt_mask, pred_mask = np.asarray(gt_mask), np.asarray(pred_mask)
 
     if selected_classes is None:
         matched_pixels, unmatched_pixels = np.zeros(gt_ann.img_size), np.zeros(gt_ann.img_size)
