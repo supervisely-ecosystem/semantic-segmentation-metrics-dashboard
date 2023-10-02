@@ -69,7 +69,6 @@ def select_input_classes(state: supervisely.app.StateJson = Depends(supervisely.
     run_sync(state.synchronize_changes())
     run_sync(DataJson().synchronize_changes())
     total_end_time = time.time()
-    print("---GPU version (cupy)---")
     print(f"Total select_input_classes function execution time: {total_end_time - total_start_time} seconds")
 
 
