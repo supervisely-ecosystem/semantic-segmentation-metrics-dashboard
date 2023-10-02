@@ -88,7 +88,7 @@ def get_mask_with_colors_mapping(annotation):
         label.geometry.draw(mask, label_color)
         objname2color[label.obj_class.name] = tuple(label_color)
 
-    if torch.cuda.is_availale(): # if using cupy
+    if torch.cuda.is_available(): # if using cupy
         mask = mask.get()
     return mask, objname2color
 
