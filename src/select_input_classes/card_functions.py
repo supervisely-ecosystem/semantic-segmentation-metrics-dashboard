@@ -44,6 +44,8 @@ def calculate_scores_tables(gt_project_dir, pred_project_dir):
 
 
 def apply_classes_to_projects(selected_classes_names):
+    print(f"Selected classes: {selected_classes_names}")
+    selected_classes_names.append("__bg__")
     # with card_widgets.select_classes_progress(message='applying classes to GT',
     #                                           total=f.get_project_items_count(g.gt_project_dir)) as pbar:
     #     f.convert_project_to_semantic_segmentation_task(target_classes_names_list=selected_classes_names,
