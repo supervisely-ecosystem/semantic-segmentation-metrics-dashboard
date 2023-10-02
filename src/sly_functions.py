@@ -4,7 +4,7 @@ import cv2
 import torch
 if torch.cuda.is_available():
     import numpy
-    import cupy as np
+    import cupy as np # gpu-compatible numpy analogue
 else:
     import numpy as np
 
@@ -88,6 +88,8 @@ def get_mask_with_colors_mapping(annotation):
         label.geometry.draw(mask, label_color)
         objname2color[label.obj_class.name] = tuple(label_color)
 
+    if torch.cuda.is_availale(): # if using cupy
+        mask = mask.get()
     return mask, objname2color
 
 
@@ -126,7 +128,8 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
     gt_mask, gt_color_mapping = get_mask_with_colors_mapping(gt_ann)
     pred_mask, pred_color_mapping = get_mask_with_colors_mapping(pred_ann)
 
-    if torch.cuda.is_available():
+    if torch.cuda.is_available(): # if using cupy
+        gt_mask, pred_mask = np.asarray(gt_mask), np.asarray(pred_mask)
         img_size = numpy.prod(gt_ann.img_size[:2])
     else:
         img_size = np.prod(gt_ann.img_size[:2])
@@ -166,21 +169,24 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
 
                 matched_mask = np.logical_and(pred_pixels_of_interest, class_union_mask)
                 pixel_match = np.sum(matched_mask) / np.sum(class_union_mask)
-                print(f"pixel_match variable type: {type(pixel_match)}")
-                db_pixels_matches[gt_class_name][pred_class_name] = float(pixel_match.get())
+                if torch.cuda.is_available(): # if using cupy
+                    pixel_match = float(pixel_match.get())
+                db_pixels_matches[gt_class_name][pred_class_name] = pixel_match
 
                 if gt_class_name == pred_class_name:
                     masks_intersection = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
                     masks_union = np.logical_or(gt_pixels_of_interest, pred_pixels_of_interest)
 
                     iou = np.sum(masks_intersection) / np.sum(masks_union)
-                    print(f"IoU variable type: {type(iou)}")
-                    db_iou_scores[gt_class_name] = float(iou.get())
+                    if torch.cuda.is_available(): # if using cupy
+                        iou = float(iou.get())
+                    db_iou_scores[gt_class_name] = iou
 
                     image_intersected_pixels_num += np.sum(masks_intersection)
     image_acc = image_intersected_pixels_num / img_size
-    print(f"image_acc variable type: {type(image_acc)}")
-    g.images_accuracy.setdefault(ds_name, {})[item_name] = float(image_acc.get())
+    if torch.cuda.is_available(): # if using cupy
+        image_acc = float(image_acc.get())
+    g.images_accuracy.setdefault(ds_name, {})[item_name] = image_acc
 
 
 def get_image_link(project_dir, ds_name, item_name):
