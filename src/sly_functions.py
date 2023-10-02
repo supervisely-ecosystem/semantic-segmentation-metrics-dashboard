@@ -167,7 +167,7 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
                 matched_mask = np.logical_and(pred_pixels_of_interest, class_union_mask)
                 pixel_match = np.sum(matched_mask) / np.sum(class_union_mask)
                 print(f"pixel_match variable type: {type(pixel_match)}")
-                db_pixels_matches[gt_class_name][pred_class_name] = np.sum(matched_mask) / np.sum(class_union_mask)
+                db_pixels_matches[gt_class_name][pred_class_name] = pixel_match.get()
 
                 if gt_class_name == pred_class_name:
                     masks_intersection = np.logical_and(gt_pixels_of_interest, pred_pixels_of_interest)
@@ -175,12 +175,12 @@ def calculate_metrics_for_image(gt_ann: supervisely.Annotation, pred_ann: superv
 
                     iou = np.sum(masks_intersection) / np.sum(masks_union)
                     print(f"IoU variable type: {type(iou)}")
-                    db_iou_scores[gt_class_name] = iou
+                    db_iou_scores[gt_class_name] = iou.get()
 
                     image_intersected_pixels_num += np.sum(masks_intersection)
     image_acc = image_intersected_pixels_num / img_size
     print(f"image_acc variable type: {type(image_acc)}")
-    g.images_accuracy.setdefault(ds_name, {})[item_name] = image_intersected_pixels_num / img_size
+    g.images_accuracy.setdefault(ds_name, {})[item_name] = image_acc.get()
 
 
 def get_image_link(project_dir, ds_name, item_name):
