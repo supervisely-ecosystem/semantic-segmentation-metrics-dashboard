@@ -17,5 +17,6 @@
   "icon_background": "#FFFFFF",
   "icon": "https://imgur.com/OIxocae.png",
   "icon_cover": false,
-  "gpu": "preferred"
+  "gpu": "preferred",
+  "community_agent": false
 }
