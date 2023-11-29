@@ -1,5 +1,5 @@
 import os
-from datetime import time
+import time 
 
 import supervisely as sly
 from supervisely.app import StateJson, DataJson
