@@ -142,15 +142,13 @@ def _download_dataset(
                 progress_cb(len(images_to_download))
 
         # download images and write to dataset
-        for idx, img_info_batch in enumerate(sly.batched(images_to_download)):
+        for img_info_batch in sly.batched(images_to_download):
             if save_images:
                 images_ids_batch = [image_info.id for image_info in img_info_batch]
                 images_nps = api.image.download_nps(
                     dataset_id, images_ids_batch, progress_cb=progress_cb
                 )
-                if len(images_to_download) > 200 and idx % 2 == 0:
-                    sly.logger.debug(f"Downloaded {idx * 50 + len(images_nps)} images. Pause 0.1 sec.") 
-                    time.sleep(0.1)
+                time.sleep(0.1)
             else:
                 images_nps = [None] * len(img_info_batch)
             for index, image_np in enumerate(images_nps):
@@ -176,35 +174,28 @@ def download_project(project_selector_widget: ProjectSelector, state: StateJson,
     if os.path.exists(project_dir):
         sly.fs.clean_dir(project_dir)
 
-    try:
-        raise Exception("Oops")
-        sly.download_project(g.api, project_info.id, project_dir, cache=g.file_cache,
-                                 progress_cb=pbar.update, save_image_info=True)
-    except Exception as e:
-        pbar = card_widgets.download_projects_progress(message=f'downloading projects', total=project_info.items_count * 2)
-        sly.logger.debug(f"Failed download project, error: {e}")
-        sly.logger.debug("Trying to download project dataset by dataset")
-        if os.path.exists(project_dir):
-            sly.fs.clean_dir(project_dir)
-        project_fs = sly.Project(project_dir, sly.OpenMode.CREATE)
-        meta = sly.ProjectMeta.from_json(g.api.project.get_meta(project_info.id))
-        project_fs.set_meta(meta)
-        for dataset_info in g.api.dataset.get_list(project_info.id):
-            dataset_name = dataset_info.name
-            dataset = project_fs.create_dataset(dataset_name)
-            _download_dataset(
-                g.api,
-                dataset,
-                dataset_info.id,
-                cache=g.file_cache,
-                progress_cb=pbar.update,
-                project_meta=meta,
-                only_image_tags=False,
-                save_image_info=True,
-                save_images=True,
-            )
-            sly.logger.debug(f"{dataset_info.name} downloaded. Pause 1 sec.")
-            time.sleep(1)
+    # sly.download_project(g.api, project_info.id, project_dir, cache=g.file_cache,
+    #                             progress_cb=pbar.update, save_image_info=True)
+    
+    project_fs = sly.Project(project_dir, sly.OpenMode.CREATE)
+    meta = sly.ProjectMeta.from_json(g.api.project.get_meta(project_info.id))
+    project_fs.set_meta(meta)
+    for dataset_info in g.api.dataset.get_list(project_info.id):
+        dataset_name = dataset_info.name
+        dataset = project_fs.create_dataset(dataset_name)
+        _download_dataset(
+            g.api,
+            dataset,
+            dataset_info.id,
+            cache=g.file_cache,
+            progress_cb=pbar.update,
+            project_meta=meta,
+            only_image_tags=False,
+            save_image_info=True,
+            save_images=True,
+        )
+        sly.logger.debug(f"{dataset_info.name} downloaded.")
+        time.sleep(1)
         
 
 
