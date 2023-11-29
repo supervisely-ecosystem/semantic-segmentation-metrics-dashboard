@@ -174,9 +174,10 @@ def download_project(project_selector_widget: ProjectSelector, state: StateJson,
     if os.path.exists(project_dir):
         sly.fs.clean_dir(project_dir)
 
+    ######################################
     # sly.download_project(g.api, project_info.id, project_dir, cache=g.file_cache,
     #                             progress_cb=pbar.update, save_image_info=True)
-    
+    # @TODO: use `sly.download_project` (instead of code below) after fixing high load errors on http-storage
     project_fs = sly.Project(project_dir, sly.OpenMode.CREATE)
     meta = sly.ProjectMeta.from_json(g.api.project.get_meta(project_info.id))
     project_fs.set_meta(meta)
@@ -196,6 +197,7 @@ def download_project(project_selector_widget: ProjectSelector, state: StateJson,
         )
         sly.logger.debug(f"{dataset_info.name} downloaded.")
         time.sleep(1)
+    ######################################
         
 
 
