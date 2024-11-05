@@ -13,11 +13,11 @@
 </p>
 
 
-[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)
-[![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervise.ly/slack)
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)
+[![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)
-[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/semantic-segmentation-metrics-dashboard.png)](https://supervise.ly)
-[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/semantic-segmentation-metrics-dashboard.png)](https://supervise.ly)
+[![views](https://app.supervisely.com/img/badges/views/supervisely-ecosystem/semantic-segmentation-metrics-dashboard.png)](https://supervisely.com)
+[![runs](https://app.supervisely.com/img/badges/runs/supervisely-ecosystem/semantic-segmentation-metrics-dashboard.png)](https://supervisely.com)
 
 </div>
 
@@ -114,10 +114,10 @@ Matched Pixels will be highlighted as green, unmatched — as red.
 
 You can use demo data to test Semantic Segmentation Metrics application:
 
-- [PascalVOC GT Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal-sample-gt-masks) — Ground Truth example project    
+- [PascalVOC GT Masks (Sample)](https://ecosystem.supervisely.com/projects/pascal-sample-gt-masks) — Ground Truth example project    
     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal-sample-gt-masks" src="https://imgur.com/DGxDVPM.png" width="350px"/>    
   
-- [PascalVOC PRED Masks (Sample)](https://ecosystem.supervise.ly/projects/pascal-sample-pred-masks) — Predictions-Labeled example project   
+- [PascalVOC PRED Masks (Sample)](https://ecosystem.supervisely.com/projects/pascal-sample-pred-masks) — Predictions-Labeled example project   
     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/pascal-sample-pred-masks" src="https://imgur.com/cXpdC7Q.png" width="350px"/>
 
 
@@ -127,7 +127,7 @@ You can use demo data to test Semantic Segmentation Metrics application:
 
 1. Prepare **GT Project** and **PRED Project**, you can use <a href="#demo-data">demo data</a> for test try.<br>
 
-2. Add [Semantic Segmentation Metrics](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard) application to your Team
+2. Add [Semantic Segmentation Metrics](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard) application to your Team
 
 <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/semantic-segmentation-metrics-dashboard" src="https://imgur.com/ryuh6lk.png" width="350px"/>
 
