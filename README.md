@@ -13,7 +13,7 @@
 </p>
 
 
-[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](../../../../supervisely-ecosystem/semantic-segmentation-metrics-dashboard)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/semantic-segmentation-metrics-dashboard)
 [![views](https://app.supervisely.com/img/badges/views/supervisely-ecosystem/semantic-segmentation-metrics-dashboard.png)](https://supervisely.com)
@@ -127,7 +127,7 @@ You can use demo data to test Semantic Segmentation Metrics application:
 
 1. Prepare **GT Project** and **PRED Project**, you can use <a href="#demo-data">demo data</a> for test try.<br>
 
-2. Add [Semantic Segmentation Metrics](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/semantic-segmentation-metrics-dashboard) application to your Team
+2. Add [Semantic Segmentation Metrics](../../../../supervisely-ecosystem/semantic-segmentation-metrics-dashboard) application to your Team
 
 <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/semantic-segmentation-metrics-dashboard" src="https://imgur.com/ryuh6lk.png" width="350px"/>
 
